@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulated Brute Force Detection and Response - Jack Jusko</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-stone-50 font-sans text-stone-900 antialiased">
+  <main class="flex min-h-screen items-start justify-center px-6 py-8 sm:py-10">
+    <div class="w-full max-w-3xl">
+      <nav class="mb-8">
+        <a href="../../index.html" class="text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors">← Back to home</a>
+      </nav>
+
+      <article class="space-y-10">
+        <header class="space-y-4 border-b border-stone-200 pb-8">
+          <h1 class="text-3xl font-semibold tracking-tight">Simulated Brute Force Detection and Response</h1>
+          <p class="text-lg text-stone-600">Deploying and responding to attack vectors in a home lab environment (June 2026).</p>
+        </header>
+
+        <p class="leading-relaxed text-stone-700">
+          This report documents a self-simulated attack on a home network designed to practice identifying and responding to brute-force attacks using both a Security Information and Event Management (SIEM) system and responding with an Endpoint Detection and Response (EDR) system. It outlines the environment setup, the attack simulation, the detection mechanisms, the response actions taken, and the troubleshooting process when initial configurations failed. The narrative shifts perspective throughout: at times I explain the methodology as the attacker who orchestrated the simulation, while in other sections I write from the viewpoint of a defender analyzing and responding to the threat.
+        </p>
+
+        <nav class="rounded-lg border border-stone-200 bg-white p-6">
+          <h2 class="mb-4 text-xs font-medium uppercase tracking-wider text-stone-400">Table of Contents</h2>
+          <ul class="space-y-2 text-sm text-stone-600">
+            <li><a href="#executive-summary" class="hover:text-stone-900 hover:underline">Executive Summary</a></li>
+            <li><a href="#technologies" class="hover:text-stone-900 hover:underline">Technologies Used</a></li>
+            <li><a href="#environment" class="hover:text-stone-900 hover:underline">Environment</a></li>
+            <li><a href="#attack" class="hover:text-stone-900 hover:underline">Attack Simulation</a></li>
+            <li><a href="#detection" class="hover:text-stone-900 hover:underline">Detection and Analysis</a></li>
+            <li><a href="#response" class="hover:text-stone-900 hover:underline">Response Actions</a></li>
+            <li><a href="#issues" class="hover:text-stone-900 hover:underline">Issues Encountered and Resolution</a></li>
+            <li><a href="#appendix" class="hover:text-stone-900 hover:underline">Appendix: Configuration Excerpts</a></li>
+          </ul>
+        </nav>
+
+        <section id="executive-summary" class="space-y-4">
+          <h2 class="text-xl font-semibold">Executive Summary</h2>
+          <p class="leading-relaxed text-stone-700">
+            I deployed a Wazuh agent on an Ubuntu droplet to monitor for security events. During a simulated SSH brute-force attack using Hydra, I detected large spikes in authentication failures and identified the attacker's source IP. I wrote custom level-12 Wazuh rules to trigger an active response that drops connections from the attacker. When the initial rule configuration failed to fire as expected, I debugged the issue, applied an interim PAM-based block, and eventually identified the correct rule ID to permanently secure the system.
+          </p>
+        </section>
+
+        <section id="technologies" class="space-y-4">
+          <h2 class="text-xl font-semibold">Technologies Used</h2>
+          <ul class="list-inside list-disc space-y-2 leading-relaxed text-stone-700">
+            <li><strong>Ubuntu 24.04:</strong> Target environment OS</li>
+            <li><strong>Wazuh:</strong> SIEM and EDR platform (manager, dashboard, and agents)</li>
+            <li><strong>Kali Linux:</strong> Attacker environment</li>
+            <li><strong>Hydra:</strong> Network logon cracker used for the brute-force attack</li>
+            <li><strong>Nmap:</strong> Network scanner used for initial reconnaissance</li>
+            <li><strong>VMware:</strong> Virtualization platform for local lab machines</li>
+            <li><strong>DigitalOcean:</strong> Cloud provider for the target droplet</li>
+          </ul>
+        </section>
+
+        <section id="environment" class="space-y-4">
+          <h2 class="text-xl font-semibold">Environment</h2>
+          <p class="leading-relaxed text-stone-700">
+            The lab network consisted of a 24/7 uptime mini-PC serving as a network file share, my home workstation, a Wazuh host VPS for the dashboard and manager, and a Kali Linux VM.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            I provisioned a target machine, <code>defense-client-1</code>, using a default Ubuntu 24.04 image on a DigitalOcean droplet (1 GB RAM, 1 vCPU, 25 GB SSD). I installed the Wazuh agent and connected it to my manager. Based on the initial agent vulnerability scan, I upgraded the kernel to 6.8.0-124 to mitigate CVE-2026-43304 and CVE-2026-43037. In its initial state, the target had all ports open and relied on password-based SSH authentication.
+          </p>
+        </section>
+
+        <section id="attack" class="space-y-4">
+          <h2 class="text-xl font-semibold">Attack Simulation</h2>
+          <p class="leading-relaxed text-stone-700">
+            From the Kali VM, I ran an intense Nmap scan against <code>defense-client-1</code>. The scan identified an open TCP port 22 and fingerprinted the OS as Ubuntu. I then launched a brute-force attack using Hydra and the NCSC 100k most-used passwords list. For this simulation, I targeted only the <code>root</code> user because I knew the account existed. In a real penetration test, I would broaden the approach and target a wider range of common default usernames—such as <code>root</code>, <code>admin</code>, <code>ubuntu</code>, and <code>server</code>.
+          </p>
+        </section>
+
+        <section id="detection" class="space-y-4">
+          <h2 class="text-xl font-semibold">Detection and Analysis</h2>
+          <p class="leading-relaxed text-stone-700">
+            Monitoring <code>defense-client-1</code> from the defense perspective, I noticed a massive inbound spike in failed authentications through the threat hunting events manager. The majority of these events were SSH-related, with syslog acting as the presumed derivative from the attack. I also observed a large spike in the events count evolution on the dashboard, alongside a distinct ATT&CK Credential Access spike.
+          </p>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/brute-force/wazuh-events-count-spike.png" alt="Events count evolution spike" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 1: Events count evolution spike</figcaption>
+          </figure>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/brute-force/wazuh-attck-credential-access.png" alt="ATT&CK Credential Access spike" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 2: ATT&CK Credential Access spike</figcaption>
+          </figure>
+
+          <p class="leading-relaxed text-stone-700">
+            I determined this was a possible brute-force attack by filtering for <code>rule.id: "5710"</code> (authentication failed) and <code>rule.id: "5712"</code> (brute force indicator). Both are logical checks during a massive spike in authentication failures.
+          </p>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/brute-force/wazuh-rule-filter-5710-5712.png" alt="Filtering by rule 5710 and 5712" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 3: Filtering by rule 5710 and 5712</figcaption>
+          </figure>
+
+          <p class="leading-relaxed text-stone-700">
+            I moved to reading individual event logs to gather data. I found that the vast majority of authentication requests originated from <code>162.226.4.x</code> (my home IP) while cycling through source ports for the outgoing connection.
+          </p>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/brute-force/wazuh-source-ip-event-logs.png" alt="Repeated failed authentication from 162.226.4.x" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 4: Repeated failed authentication from 162.226.4.x</figcaption>
+          </figure>
+
+          <p class="leading-relaxed text-stone-700">
+            These two images represent snaps of the specific sshd auth failure logs to show the repeated source IP consistency with varying source ports. Several other types of logs also showed the source IP as the issue, such as pluggable authentication module (PAM) logs indicating an access failure.
+          </p>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/brute-force/wazuh-sshd-auth-failure-1.png" alt="SSHD auth failure logs part 1" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 5: SSHD auth failure logs showing source IP consistency</figcaption>
+          </figure>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/brute-force/wazuh-sshd-auth-failure-2.png" alt="SSHD auth failure logs part 2" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 6: Second snap of SSHD auth failure logs</figcaption>
+          </figure>
+
+          <p class="leading-relaxed text-stone-700">
+            I also noted a consistent destination user: it appeared the attack only attempted to guess the password for the <code>root</code> account.
+          </p>
+        </section>
+
+        <section id="response" class="space-y-4">
+          <h2 class="text-xl font-semibold">Response Actions</h2>
+          <p class="leading-relaxed text-stone-700">
+            I could see the attack coming in and failing, but I needed an immediate detection and response mechanism. I decided to design custom Wazuh rules to throw a high-severity alert (level 12) if the brute force actually succeeded. I implemented two specific detection scenarios: one for multiple failed authentication attempts followed by a successful login, and another for a brute force on a non-existent user followed by a successful login. I built these custom rules primarily for high-fidelity detection of a worst-case scenario—an attacker finally getting in.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            To handle the threat proactively, I built an automatic response that drops any connection from the source IP for 10 minutes. Rather than tying this active response to my custom post-breach rules, I triggered the firewall drop using Wazuh's pre-existing built-in rules for brute-force detection (rules 5712 and 5720). Relying on the built-in rules for the active response applies to a wider range of situations, allowing the system to block the attacker during the attempt rather than waiting for a successful login.
+          </p>
+
+          <p class="leading-relaxed text-stone-700">
+            This is a screenshot from my Hydra log prior to instituting the active response rule, where you can see the brute-force attack proceeding as expected.
+          </p>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/brute-force/hydra-log-pre-active-response.png" alt="Hydra log prior to active response" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 7: Hydra log prior to active response</figcaption>
+          </figure>
+        </section>
+
+        <section id="issues" class="space-y-4">
+          <h2 class="text-xl font-semibold">Issues Encountered and Resolution</h2>
+
+          <figure class="my-6">
+            <figcaption class="mb-2 text-sm text-stone-500 text-center">Figure 8: Screenshot for demo purposes (specifically of adding the active response rule)</figcaption>
+            <img src="../../assets/labs/brute-force/wazuh-active-response-config.png" alt="Active response rule configuration" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+          </figure>
+
+          <p class="leading-relaxed text-stone-700">
+            At this point in the lab, I ran into trouble. Even though I created the Wazuh active response configuration, I saw no indication that it was taking effect. Hydra continued to record attempts with no difference, and the events manager continued to pick up SSHD attempts. I verified that the Wazuh agent was online, that the Wazuh manager had restarted after adding the rule, and that <code>firewall-drop</code> was a correctly defined command.
+          </p>
+
+          <figure class="my-6">
+            <figcaption class="mb-2 text-sm text-stone-500 text-center">Figure 9: Screenshot identifying that no events came up for rule id 5720</figcaption>
+            <img src="../../assets/labs/brute-force/wazuh-no-events-rule-5720.png" alt="No events for rule 5720" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+          </figure>
+
+          <p class="leading-relaxed text-stone-700">
+            Rule 5712 appeared to work fine. I saw password spraying attacks from around the web (for example, one targeting the username <code>server</code> from Bulgaria), which confirmed the system was detecting external noise. I also noted that rule 40111 (maximum authentication attempts exceeded) fired correctly. Since 5720 should fire when the source IP and source user are correctly read during the attack vector, I needed to figure out why one fired but not the other.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            I still had not figured out why rule 5720 failed to appear. Because I was simulating a real-world defense situation, I attempted to secure the network immediately before fine-tuning the solution. I saw that the PAM rule (5551) fired directly and served as a valid indicator. I added 5551 to my manager active response rule and restarted it.
+          </p>
+
+          <figure class="my-6">
+            <figcaption class="mb-2 text-sm text-stone-500 text-center">Figure 10: Screenshot showing modified rule</figcaption>
+            <img src="../../assets/labs/brute-force/wazuh-modified-rule-5551.png" alt="Modified active response rule with 5551" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+          </figure>
+
+          <p class="leading-relaxed text-stone-700">
+            Adding 5551 stopped the brute-force attack on my system.
+          </p>
+
+          <figure class="my-6">
+            <figcaption class="mb-2 text-sm text-stone-500 text-center">Figure 11: Screenshot showing resume session failed</figcaption>
+            <img src="../../assets/labs/brute-force/hydra-resume-session-failed.png" alt="Hydra resume session failed" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+          </figure>
+
+          <figure class="my-6">
+            <figcaption class="mb-2 text-sm text-stone-500 text-center">Figure 12: Screenshot showing that the Wazuh active response rule correctly identified and blocked the brute force attack</figcaption>
+            <img src="../../assets/labs/brute-force/wazuh-active-response-blocked.png" alt="Active response blocked the attack" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+          </figure>
+
+          <p class="leading-relaxed text-stone-700">
+            I ran the attack again to confirm the active response worked correctly.
+          </p>
+
+          <figure class="my-6">
+            <figcaption class="mb-2 text-sm text-stone-500 text-center">Figure 13: Screenshot showing active response configuration in action</figcaption>
+            <img src="../../assets/labs/brute-force/wazuh-active-response-in-action.png" alt="Active response in action" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+          </figure>
+
+          <p class="leading-relaxed text-stone-700">
+            After locking down the network, I established why 5720 failed to work: for my configuration, the correct rule ID is <strong>5763</strong>, which I identified by reading the event logs.
+          </p>
+        </section>
+
+        <section id="appendix" class="space-y-4">
+          <h2 class="text-xl font-semibold">Appendix: Configuration Excerpts</h2>
+          
+          <div class="rounded-lg border border-stone-200 bg-stone-100 p-4 overflow-x-auto">
+            <pre class="text-sm text-stone-800"><code>&lt;group name="linux,sshd,"&gt;
+  &lt;rule id="100001" level="12"&gt;
+    &lt;if_matched_sid&gt;5712&lt;/if_matched_sid&gt;
+    &lt;if_sid&gt;5715&lt;/if_sid&gt;
+    &lt;description&gt;Brute force: non existent user into successful auth&lt;/description&gt;
+    &lt;mitre&gt;
+      &lt;id&gt;T1110&lt;/id&gt;
+    &lt;/mitre&gt;
+  &lt;/rule&gt;
+&lt;/group&gt;
+
+&lt;group name="linux,sshd,"&gt;
+  &lt;rule id="100002" level="12"&gt;
+    &lt;if_matched_sid&gt;5720&lt;/if_matched_sid&gt;
+    &lt;if_sid&gt;5715&lt;/if_sid&gt;
+    &lt;description&gt;Brute force: multiplied failed into successful auth&lt;/description&gt;
+    &lt;mitre&gt;
+      &lt;id&gt;T1110&lt;/id&gt;
+    &lt;/mitre&gt;
+  &lt;/rule&gt;
+&lt;/group&gt;</code></pre>
+          </div>
+
+          <div class="rounded-lg border border-stone-200 bg-stone-100 p-4 overflow-x-auto">
+            <pre class="text-sm text-stone-800"><code>&lt;active-response&gt;
+  &lt;command&gt;firewall-drop&lt;/command&gt;
+  &lt;location&gt;local&lt;/location&gt;
+  &lt;rules_id&gt;5712,5720&lt;/rules_id&gt;
+  &lt;timeout&gt;600&lt;/timeout&gt;
+&lt;/active-response&gt;</code></pre>
+          </div>
+          <p class="text-sm text-stone-600 italic">Note: Rule 5551 was added to the active response configuration during troubleshooting, as described in the narrative.</p>
+        </section>
+
+      </article>
+    </div>
+  </main>
+</body>
+</html>

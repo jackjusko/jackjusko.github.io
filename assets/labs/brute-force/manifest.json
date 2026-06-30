@@ -1,0 +1,18 @@
+{
+  "figures": [
+    { "order": 1, "file": "wazuh-events-count-spike.png", "caption": "Events count evolution spike", "captionPosition": "below", "pdfRef": "p2-i1" },
+    { "order": 2, "file": "wazuh-attck-credential-access.png", "caption": "ATT&CK Credential Access spike", "captionPosition": "below", "pdfRef": "p2-i2" },
+    { "order": 3, "file": "wazuh-rule-filter-5710-5712.png", "caption": "Filtering by rule 5710 and 5712", "captionPosition": "below", "pdfRef": "p3-i1" },
+    { "order": 4, "file": "wazuh-source-ip-event-logs.png", "caption": "Repeated failed authentication from 162.226.4.x", "captionPosition": "below", "pdfRef": "p3-i2" },
+    { "order": 5, "file": "wazuh-sshd-auth-failure-1.png", "caption": "These two images represent snaps of the specific sshd auth failure logs to show the repeated src ip consistency with varying source ports", "captionPosition": "below", "pdfRef": "p4-i1" },
+    { "order": 6, "file": "wazuh-sshd-auth-failure-2.png", "caption": "Second snap of sshd auth failure logs showing source IP consistency", "captionPosition": "below", "pdfRef": "p5-i1" },
+    { "order": 7, "file": "hydra-log-pre-active-response.png", "caption": "Screenshot from my hydra log from prior to instituting the active response rule, where you can see the brute force attack is proceeding as expected", "captionPosition": "below", "pdfRef": "p6-i1" },
+    { "order": 8, "file": "wazuh-active-response-config.png", "caption": "Screenshot for demo purposes (specifically of adding the active response rule)", "captionPosition": "above", "pdfRef": "p7-i1" },
+    { "order": 9, "file": "wazuh-no-events-rule-5720.png", "caption": "Screenshot identifying that no events came up for rule id 5720", "captionPosition": "above", "pdfRef": "p7-i2" },
+    { "order": 10, "file": "wazuh-modified-rule-5551.png", "caption": "Screenshot showing modified rule", "captionPosition": "above", "pdfRef": "p8-i1" },
+    { "order": 11, "file": "hydra-resume-session-failed.png", "caption": "Screenshot showing resume session failed", "captionPosition": "above", "pdfRef": "p8-i2" },
+    { "order": 12, "file": "wazuh-active-response-blocked.png", "caption": "Screenshot showing that the wazuh active response rule I wrote correctly identified and blocked the brute force attack", "captionPosition": "above", "pdfRef": "p8-i3" },
+    { "order": 13, "file": "wazuh-active-response-in-action.png", "caption": "Screenshot showing active response configuration in action", "captionPosition": "above", "pdfRef": "p9-i1" },
+    { "order": 14, "file": "wazuh-verification-no-prior-access.png", "caption": "Log query verifying no successful SSH connection from the attacker IP in the past week", "captionPosition": "below", "pdfRef": "p9-i2" }
+  ]
+}
