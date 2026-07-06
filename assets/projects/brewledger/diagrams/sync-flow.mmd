@@ -1,0 +1,15 @@
+flowchart LR
+  UserAction[User action]
+  LedgerEntry[Ledger entry]
+  CacheUpdate[Cache update]
+  Pending[sync_status pending]
+  SyncPush[Sync push]
+  ServerProc[Server validate\nand apply]
+  OtherDevices[Other devices\npull and apply]
+
+  UserAction --> LedgerEntry
+  LedgerEntry --> CacheUpdate
+  CacheUpdate --> Pending
+  Pending --> SyncPush
+  SyncPush --> ServerProc
+  ServerProc --> OtherDevices

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrewLedger — Jack Jusko</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral', flowchart: { useMaxWidth: true, htmlLabels: true } });
+  </script>
+</head>
+<body class="min-h-screen bg-stone-50 font-sans text-stone-900 antialiased">
+  <main class="flex min-h-screen items-start justify-center px-6 py-8 sm:py-10">
+    <div class="w-full max-w-5xl">
+      <nav class="mb-8">
+        <a href="../../index.html" class="text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors">← Back to home</a>
+      </nav>
+
+      <article class="space-y-10">
+        <header class="space-y-4 border-b border-stone-200 pb-8">
+          <div class="flex items-center gap-4">
+            <img src="../../assets/projects/brewledger/logo.png" alt="BrewLedger logo" class="h-12 w-12 rounded-lg border border-stone-200 bg-white object-contain p-1" width="48" height="48">
+            <div>
+              <h1 class="text-3xl font-semibold tracking-tight">BrewLedger</h1>
+              <p class="text-lg text-stone-600">Brewery operations platform with local-first sync for mobile and desktop</p>
+            </div>
+          </div>
+          <p class="text-sm text-stone-500">
+            Technologies: Vue 3, Vite, Capacitor, Dexie/IndexedDB, Express, SQLite, Stripe
+          </p>
+          <p>
+            <a href="https://getbrewledger.com" class="text-sm font-medium text-stone-700 underline decoration-stone-300 underline-offset-2 hover:text-stone-900 hover:decoration-stone-500" target="_blank" rel="noopener noreferrer">View live product →</a>
+          </p>
+        </header>
+
+        <p class="leading-relaxed text-stone-700">
+          BrewLedger is a local-first brewery operations platform that integrates inventory, batch tracking, taproom serving, and TTB compliance. The mobile app handles floor operations while the desktop console manages reporting and administration. This overview details the system architecture, including the client-server split, conflict resolution in the sync protocol, and the central role of the ledger.
+        </p>
+
+        <nav class="rounded-lg border border-stone-200 bg-white p-6">
+          <h2 class="mb-4 text-xs font-medium uppercase tracking-wider text-stone-400">Table of Contents</h2>
+          <ul class="space-y-2 text-sm text-stone-600">
+            <li><a href="#executive-summary" class="hover:text-stone-900 hover:underline">Executive summary</a></li>
+            <li><a href="#master-network" class="hover:text-stone-900 hover:underline">Master systems network</a></li>
+            <li><a href="#system-context" class="hover:text-stone-900 hover:underline">System context</a></li>
+            <li><a href="#three-surfaces" class="hover:text-stone-900 hover:underline">Three surfaces, one backend</a></li>
+            <li><a href="#sync" class="hover:text-stone-900 hover:underline">Sync and conflict resolution</a></li>
+            <li><a href="#ledger" class="hover:text-stone-900 hover:underline">Ledger system</a></li>
+            <li><a href="#production" class="hover:text-stone-900 hover:underline">Production and batch tracking</a></li>
+            <li><a href="#ttb" class="hover:text-stone-900 hover:underline">TTB and compliance</a></li>
+            <li><a href="#integrations" class="hover:text-stone-900 hover:underline">Integrations</a></li>
+            <li><a href="#screenshots" class="hover:text-stone-900 hover:underline">Screenshots</a></li>
+            <li><a href="#tech-stack" class="hover:text-stone-900 hover:underline">Tech stack</a></li>
+          </ul>
+        </nav>
+
+        <section id="executive-summary" class="space-y-4">
+          <h2 class="text-xl font-semibold">Executive summary</h2>
+          <p class="leading-relaxed text-stone-700">
+            BrewLedger consists of three components: a Capacitor mobile app for iOS and Android, a Vue desktop console, and an Express API backed by SQLite. The system uses an offline-first design where IndexedDB manages local data, and the server ensures multi-device consistency upon reconnection.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            Inventory movements are recorded as append-only ledger entries. To ensure performance, the UI reads from a cached on-hand count derived from this log. The sync protocol pushes pending changes and pulls server updates. It resolves conflicts using timestamps and version-based optimistic locking.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            The mobile and console applications serve distinct roles. The mobile app handles floor operations such as receiving, counting, and batch monitoring. The console manages administrative tasks, including TTB compliance reporting, billing, and the AI assistant. While both share a common sync service and repository layer, the console includes additional services for desktop-specific workflows.
+          </p>
+        </section>
+
+        <section id="master-network" class="space-y-6">
+          <h2 class="text-xl font-semibold">Master systems network</h2>
+          <p class="leading-relaxed text-stone-700">
+            The graph below is the full component map for BrewLedger: server routes, both clients, shared data entities, auth, and external integrations. Lines are undirected — each edge means two parts connect or integrate, not a strict call direction. The ledger sits at the center; almost every operational path reads from or writes to it.
+          </p>
+
+          <div class="overflow-x-auto rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+            <div class="mermaid min-w-[48rem]">
+flowchart LR
+  subgraph server [Server]
+    Express
+    SQLite
+    InitDB
+    Migrations
+    AuthRoutes
+    BillingRoutes
+    SyncRoute
+    BreweryInfoAPI
+    StripeWebhook
+    AIChat
+  end
+
+  subgraph mobile [Mobile app]
+    MobileApp
+    MobileViews
+    MobileRepos
+    MobileAuthService
+    MobileSyncService
+    IndexedDB
+    Dexie
+    Capacitor
+    Vue
+    Vite
+  end
+
+  subgraph console [Console app]
+    ConsoleApp
+    ConsoleViews
+    ConsoleRepos
+    TTBFormService
+    TTBPDFExportService
+    BreweryInfoService
+    ConsoleAuthService
+    ConsoleSyncService
+    Blog
+    Landing
+  end
+
+  subgraph data [Data and entities]
+    Ledger
+    Items
+    Locations
+    Batches
+    BatchLocations
+    BatchReadings
+    BatchAdditions
+    BatchMilestones
+    Recipes
+    RecipeItems
+    OnhandCache
+    ParLevels
+    VarianceEvents
+    PackagingRuns
+    MilestoneTemplates
+    Categories
+  end
+
+  subgraph auth [Auth and session]
+    Token
+    Session
+    RouterGuards
+  end
+
+  subgraph external [External]
+    Stripe
+    TTB
+  end
+
+  Express --- SQLite
+  Express --- InitDB
+  Express --- AuthRoutes
+  Express --- BillingRoutes
+  Express --- SyncRoute
+  Express --- BreweryInfoAPI
+  Express --- StripeWebhook
+  Express --- AIChat
+  InitDB --- Migrations
+  AuthRoutes --- Token
+  BillingRoutes --- Stripe
+  StripeWebhook --- Stripe
+  SyncRoute --- Ledger
+  BreweryInfoAPI --- BreweryInfoService
+
+  MobileApp --- MobileViews
+  MobileApp --- Vue
+  MobileApp --- Capacitor
+  MobileViews --- MobileRepos
+  MobileRepos --- MobileSyncService
+  MobileRepos --- MobileAuthService
+  MobileRepos --- IndexedDB
+  IndexedDB --- Dexie
+  Dexie --- Ledger
+  Dexie --- Items
+  Dexie --- Locations
+  Dexie --- Batches
+  Dexie --- BatchLocations
+  Dexie --- OnhandCache
+  MobileSyncService --- SyncRoute
+  MobileAuthService --- AuthRoutes
+  MobileAuthService --- Token
+  Token --- Session
+  Session --- RouterGuards
+  Vue --- Vite
+
+  ConsoleApp --- ConsoleViews
+  ConsoleApp --- Landing
+  ConsoleApp --- Blog
+  ConsoleViews --- ConsoleRepos
+  ConsoleRepos --- ConsoleSyncService
+  ConsoleRepos --- ConsoleAuthService
+  ConsoleRepos --- TTBFormService
+  ConsoleRepos --- BreweryInfoService
+  ConsoleSyncService --- SyncRoute
+  ConsoleAuthService --- AuthRoutes
+  ConsoleAuthService --- Token
+  TTBFormService --- Ledger
+  TTBFormService --- OnhandCache
+  TTBFormService --- VarianceEvents
+  TTBFormService --- PackagingRuns
+  TTBFormService --- BatchMilestones
+  TTBFormService --- TTBPDFExportService
+  TTBPDFExportService --- TTB
+  BreweryInfoService --- BreweryInfoAPI
+
+  Ledger --- Items
+  Ledger --- Locations
+  Ledger --- Batches
+  Ledger --- OnhandCache
+  Items --- Categories
+  Items --- ParLevels
+  Locations --- ParLevels
+  Batches --- BatchLocations
+  Batches --- BatchReadings
+  Batches --- BatchAdditions
+  Batches --- BatchMilestones
+  Batches --- PackagingRuns
+  Batches --- MilestoneTemplates
+  BatchLocations --- BatchReadings
+  BatchLocations --- BatchAdditions
+  Recipes --- RecipeItems
+  Recipes --- Batches
+  VarianceEvents --- Ledger
+  PackagingRuns --- Ledger
+  OnhandCache --- Ledger
+  ParLevels --- Items
+  ParLevels --- Locations
+            </div>
+          </div>
+          <p class="text-sm text-stone-500 text-center">
+            Interactive master network — pan horizontally on smaller screens.
+            <a href="../../assets/brewledger-resources/diagram-preview.html" class="text-stone-700 underline decoration-stone-300 underline-offset-2 hover:text-stone-900" target="_blank" rel="noopener noreferrer">Open full-screen diagram</a>
+          </p>
+
+          <div class="space-y-4">
+            <h3 class="text-lg font-medium text-stone-800">How the clusters interact</h3>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div class="rounded-lg border border-stone-200 bg-white p-4">
+                <h4 class="font-medium text-stone-900">Server</h4>
+                <p class="mt-2 text-sm leading-relaxed text-stone-600">
+                  Express is the hub. <code class="text-stone-800">SyncRoute</code> is the sync boundary — it validates and applies client changes to the authoritative ledger in SQLite. <code class="text-stone-800">AuthRoutes</code> issues tokens; <code class="text-stone-800">BillingRoutes</code> and <code class="text-stone-800">StripeWebhook</code> handle subscriptions. <code class="text-stone-800">BreweryInfoAPI</code> serves TTB header fields; <code class="text-stone-800">AIChat</code> powers the console assistant.
+                </p>
+              </div>
+              <div class="rounded-lg border border-stone-200 bg-white p-4">
+                <h4 class="font-medium text-stone-900">Mobile app</h4>
+                <p class="mt-2 text-sm leading-relaxed text-stone-600">
+                  Floor workflows run in Vue views backed by repositories. Repositories read and write Dexie/IndexedDB locally, then queue changes for <code class="text-stone-800">MobileSyncService</code>. Capacitor wraps the same SPA for iOS and Android. Auth flows through <code class="text-stone-800">MobileAuthService</code> → server auth routes → token stored in session.
+                </p>
+              </div>
+              <div class="rounded-lg border border-stone-200 bg-white p-4">
+                <h4 class="font-medium text-stone-900">Console app</h4>
+                <p class="mt-2 text-sm leading-relaxed text-stone-600">
+                  Same repository + sync pattern as mobile, plus desktop-only services. <code class="text-stone-800">TTBFormService</code> aggregates ledger, packaging, milestones, and variance data into Form 5130.9; <code class="text-stone-800">TTBPDFExportService</code> renders the PDF. Landing and blog are public-facing routes in the same app shell.
+                </p>
+              </div>
+              <div class="rounded-lg border border-stone-200 bg-white p-4">
+                <h4 class="font-medium text-stone-900">Data and entities</h4>
+                <p class="mt-2 text-sm leading-relaxed text-stone-600">
+                  The ledger is append-only and references items, locations, and batches. <code class="text-stone-800">OnhandCache</code> is derived from ledger entries for fast UI reads. Batches fan out into vessel splits (<code class="text-stone-800">BatchLocations</code>), readings, additions, milestones, and packaging runs — each of which can produce ledger movements.
+                </p>
+              </div>
+              <div class="rounded-lg border border-stone-200 bg-white p-4">
+                <h4 class="font-medium text-stone-900">Auth and session</h4>
+                <p class="mt-2 text-sm leading-relaxed text-stone-600">
+                  Tokens from the server become client sessions. Router guards on both platforms gate routes until auth resolves. Billing-gated features check subscription state after sync pulls the latest org record.
+                </p>
+              </div>
+              <div class="rounded-lg border border-stone-200 bg-white p-4">
+                <h4 class="font-medium text-stone-900">External</h4>
+                <p class="mt-2 text-sm leading-relaxed text-stone-600">
+                  Stripe handles checkout, customer portal, and webhooks that update subscription status on the server (then sync to clients). TTB is the compliance output — not an API integration, but the target format for PDF export from console reporting.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <p class="leading-relaxed text-stone-700">
+            <strong>Typical path:</strong> a brewer logs a receive or batch reading on mobile → repository writes a ledger entry and updates on-hand cache locally → sync pushes to <code>SyncRoute</code> → server persists to SQLite → other devices pull the change → console TTB services can aggregate the same ledger history into a compliance report. One write path, one source of truth, two client surfaces.
+          </p>
+        </section>
+
+        <section id="system-context" class="space-y-4">
+          <h2 class="text-xl font-semibold">System context</h2>
+          <p class="leading-relaxed text-stone-700">
+            Mobile and desktop users interact with separate client applications that connect to a single Express API. Stripe manages subscription billing and webhooks. TTB reporting is a primary output: the console aggregates ledger and location data to generate Form 5130.9 PDFs. The mobile app focuses on data capture to support this pipeline.
+          </p>
+          <figure class="my-6">
+            <img src="../../assets/projects/brewledger/diagrams/level-0-system-context.png" alt="System context diagram showing mobile app, console, Express API, SQLite, Stripe, and TTB reporting" class="w-full rounded-lg border border-stone-200 bg-white shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 1: System context — two clients, one backend, external billing and compliance targets</figcaption>
+          </figure>
+          <p class="leading-relaxed text-stone-700">
+            The codebase is organized into server and platform-specific directories. Both client platforms use a shared repository pattern where repositories interface with Dexie for local storage. Server-side validation mirrors client rules to maintain data integrity during synchronization.
+          </p>
+        </section>
+
+        <section id="three-surfaces" class="space-y-4">
+          <h2 class="text-xl font-semibold">Three surfaces, one backend</h2>
+          <p class="leading-relaxed text-stone-700">
+            The system maintains a unified business logic across platforms. Both clients use the same API endpoints and entity schemas. The console provides management views and TTB services, while the mobile app uses Capacitor for native functionality and layouts optimized for one-handed use.
+          </p>
+          <div class="overflow-x-auto rounded-lg border border-stone-200">
+            <table class="w-full text-sm text-left">
+              <thead class="border-b border-stone-200 bg-stone-100 text-stone-600">
+                <tr>
+                  <th class="px-4 py-3 font-medium">Area</th>
+                  <th class="px-4 py-3 font-medium">Mobile (<code>brewledger-app</code>)</th>
+                  <th class="px-4 py-3 font-medium">Console (<code>console</code>)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-stone-200 text-stone-700">
+                <tr>
+                  <td class="px-4 py-3 font-medium">Primary use</td>
+                  <td class="px-4 py-3">Floor ops: receive, count, batch readings, serving</td>
+                  <td class="px-4 py-3">Management: reports, TTB PDF, bulk UI, analytics</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium">Offline</td>
+                  <td class="px-4 py-3">Full workflow offline; sync on reconnect</td>
+                  <td class="px-4 py-3">Same local-first model via IndexedDB</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium">TTB</td>
+                  <td class="px-4 py-3">Data capture: removals, milestones, location stages</td>
+                  <td class="px-4 py-3"><code>TTBFormService</code>, PDF export, brewery info API</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium">Billing</td>
+                  <td class="px-4 py-3">Trial banner only; checkout moved to console</td>
+                  <td class="px-4 py-3">Stripe checkout, portal, subscription settings</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium">Batch tracking</td>
+                  <td class="px-4 py-3">Original implementation; parity maintained</td>
+                  <td class="px-4 py-3">Full parity after console migration; desktop-optimized layout</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="leading-relaxed text-stone-700">
+            Core features such as production tracking and TTB data paths are available on both platforms. Desktop-specific features, including CSV search and QuickBooks integration, are reserved for the console to leverage larger screen space and server-side tools.
+          </p>
+        </section>
+
+        <section id="sync" class="space-y-4">
+          <h2 class="text-xl font-semibold">Sync and conflict resolution</h2>
+          <p class="leading-relaxed text-stone-700">
+            Designing the sync protocol was the most significant architectural challenge. Breweries often have unreliable connectivity. The system ensures that a cellar reading logged offline and a par level adjustment made on the console both synchronize correctly, preventing duplicate entries or inconsistent vessel states.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            The synchronization cycle follows a push-then-pull model. Clients batch pending changes for server validation against business rules, such as vessel exclusivity and ledger invariants. Following a successful push, the client pulls updates made since the last synchronization. Successfully processed changes are then marked as synced locally.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            Conflict resolution employs a last-write-wins strategy based on timestamps, supplemented by version-based optimistic locking. In cases where timestamps are insufficient, the server's state takes precedence to maintain organization-wide consistency.
+          </p>
+          <figure class="my-6">
+            <img src="../../assets/projects/brewledger/diagrams/sync-flow.png" alt="Sync flow from user action through ledger entry, cache update, pending status, server validation, to other devices" class="w-full rounded-lg border border-stone-200 bg-white shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 2: Sync ↔ ledger ↔ cache — one user action propagates through local storage to other devices</figcaption>
+          </figure>
+          <p class="leading-relaxed text-stone-700">
+            Two integrity mechanisms ensure data reliability. A unique request ID on ledger entries prevents duplicate transactions during retry attempts. Additionally, soft-delete tombstones for batch locations ensure that vessel availability remains consistent across all devices after a synchronization pull.
+          </p>
+          <div class="rounded-lg border border-stone-200 bg-stone-100 p-4 overflow-x-auto">
+            <pre class="text-sm text-stone-800"><code>User Action → Ledger Entry → Cache Update → sync_status pending
+    ↓
+Sync Push → Server validate and apply → Other devices pull and apply</code></pre>
+          </div>
+        </section>
+
+        <section id="ledger" class="space-y-4">
+          <h2 class="text-xl font-semibold">Ledger system</h2>
+          <p class="leading-relaxed text-stone-700">
+            Inventory is managed through an append-only transaction log to ensure a complete audit trail. Every movement—such as receiving malt or transferring stock—generates a ledger entry containing the quantity, item, and location. Reversals and corrections are recorded as new entries, preserving the full history of every transaction.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            The system supports various transaction types, including receipts, consumption, and transfers. An on-hand cache, derived from the ledger, ensures that inventory views and par-level checks remain performant. This cache can be recomputed from the full ledger history if necessary.
+          </p>
+          <figure class="my-6">
+            <img src="../../assets/projects/brewledger/diagrams/level-3-subsystems.png" alt="Inventory subsystem diagram showing items, locations, ledger entries, on-hand cache, par levels, and transaction types" class="w-full rounded-lg border border-stone-200 bg-white shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 3: Inventory and ledger — entities, transaction types, and the on-hand cache</figcaption>
+          </figure>
+          <p class="leading-relaxed text-stone-700">
+            Ledger entries capture item and location names at the time of the transaction. This ensures that historical records remain accurate even if entities are renamed, which is critical for audit trails and TTB compliance.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            Par levels are monitored at both the location and global levels. The system tracks these minimums to provide a clear audit trail of all movements, from initial receipt to final packaging.
+          </p>
+        </section>
+
+        <section id="production" class="space-y-4">
+          <h2 class="text-xl font-semibold">Production and batch tracking</h2>
+          <p class="leading-relaxed text-stone-700">
+            Batch tracking supports complex workflows, including splitting a single batch across multiple vessels. Brewers can record readings and additions for each vessel, manage volume transfers, and log adjustments with specific reasons for loss or serving pulls.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            Production milestones include knockout, pitch, and completion. The system enforces a 'production complete' step to ensure data integrity. Upon completion, a ledger entry moves the finished beer into inventory. This provides the necessary data for TTB reporting and serving views.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            Serving tanks are managed with specific occupancy rules. Each tank is associated with a serving location that can hold one finished-beer item at a time. When a batch is moved to a serving tank, the system updates the ledger and vessel status to reflect the new availability across all devices.
+          </p>
+        </section>
+
+        <section id="ttb" class="space-y-4">
+          <h2 class="text-xl font-semibold">TTB and compliance</h2>
+          <p class="leading-relaxed text-stone-700">
+            The system architecture is designed to support TTB Form 5130.9 reporting. Locations are categorized by stages that map directly to form columns, and ledger entries include the metadata required for detailed line-item breakdowns.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            The mobile app captures operational data on the floor, which the console then aggregates to generate TTB reports. The ledger serves as the authoritative data source. This ensures that compliance forms are accurate projections of actual brewery operations.
+          </p>
+        </section>
+
+        <section id="integrations" class="space-y-4">
+          <h2 class="text-xl font-semibold">Integrations</h2>
+          <p class="leading-relaxed text-stone-700">
+            BrewLedger integrates with several external systems through a unified sync and authentication layer:
+          </p>
+          <ul class="list-inside list-disc space-y-2 leading-relaxed text-stone-700">
+            <li><strong>Stripe:</strong> Manages subscriptions and billing through the console.</li>
+            <li><strong>QuickBooks:</strong> Facilitates sales order creation and item mapping.</li>
+            <li><strong>AWS SES:</strong> Handles transactional emails for authentication and account management.</li>
+            <li><strong>AI assistant (console):</strong> Processes natural language commands to perform inventory and batch actions while maintaining data integrity through the sync layer.</li>
+          </ul>
+        </section>
+
+        <section id="screenshots" class="space-y-6">
+          <h2 class="text-xl font-semibold">Screenshots</h2>
+          <p class="leading-relaxed text-stone-700">
+            Mobile on the floor, console at the desk — same org, same sync protocol.
+          </p>
+
+          <h3 class="text-lg font-medium text-stone-800">Mobile</h3>
+          <figure class="my-4">
+            <img src="../../assets/projects/brewledger/screenshots/sc1.png" alt="BrewLedger mobile app dashboard" class="w-full max-w-sm mx-auto rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Mobile dashboard — quick actions and sync status for floor work</figcaption>
+          </figure>
+          <figure class="my-4">
+            <img src="../../assets/projects/brewledger/screenshots/sc3.png" alt="BrewLedger mobile batch detail" class="w-full max-w-sm mx-auto rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Batch detail — vessel splits, readings, and additions per tank</figcaption>
+          </figure>
+          <figure class="my-4">
+            <img src="../../assets/projects/brewledger/screenshots/sc5.png" alt="BrewLedger mobile inventory view" class="w-full max-w-sm mx-auto rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Inventory — on-hand counts driven by the ledger cache</figcaption>
+          </figure>
+
+          <h3 class="text-lg font-medium text-stone-800">Desktop console</h3>
+          <figure class="my-4">
+            <img src="../../assets/projects/brewledger/screenshots/dc1.png" alt="BrewLedger desktop console dashboard" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Console dashboard — stat cards, vessel overview, TTB compliance window</figcaption>
+          </figure>
+          <figure class="my-4">
+            <img src="../../assets/projects/brewledger/screenshots/dc2.png" alt="BrewLedger desktop batch management" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Batch list — in-progress and finished sections with vessel volume tree</figcaption>
+          </figure>
+          <figure class="my-4">
+            <img src="../../assets/projects/brewledger/screenshots/dc3.png" alt="BrewLedger desktop ledger view" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Ledger view — append-only transaction history with typed badges</figcaption>
+          </figure>
+        </section>
+
+        <section id="tech-stack" class="space-y-4">
+          <h2 class="text-xl font-semibold">Tech stack</h2>
+          <ul class="list-inside list-disc space-y-2 leading-relaxed text-stone-700">
+            <li><strong>Mobile:</strong> Vue 3, Vite, Tailwind CSS, Dexie.js (IndexedDB), Capacitor 6 (iOS/Android)</li>
+            <li><strong>Console:</strong> Vue 3 SPA, same repository and sync layer, desktop-optimized UI components</li>
+            <li><strong>Server:</strong> Express.js, SQLite, Stripe API, JWT-like token auth with bcrypt</li>
+            <li><strong>Testing:</strong> Vitest + Supertest (backend), Vue Test Utils (frontend)</li>
+          </ul>
+          <p class="leading-relaxed text-stone-700">
+            BrewLedger is a local-first system designed around an authoritative ledger. By separating mobile and desktop workflows, it aligns with the practical needs of brewery operations—providing the right tools for both the cellar and the office.
+          </p>
+        </section>
+
+      </article>
+    </div>
+  </main>
+</body>
+</html>

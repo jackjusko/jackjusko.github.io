@@ -1,0 +1,200 @@
+---
+name: TTB Stage Operation-Driven Rework
+overview: Refactor TTB column assignment so stage (cellar/racking_keg/bottling_bulk/case) is driven by the actual packaging/processing operation, not just location. This unblocks keg supply and packaged-beer inventory design.
+todos: []
+isProject: false
+---
+
+# TTB Stage: Operation-Driven Rework
+
+## The Core Tension
+
+Today, TTB columns (b, c, d, e, f) are inferred from **location stage**. But TTB Form 5130.9 is really about **operations**:
+
+- **Line 2**: Beer produced (fermentation) → cellar
+- **Line 9**: Beer racked (into kegs) → racking keg
+- **Line 10**: Beer bottled/canned (into cases) → case
+- **Line 22**: Beer transferred for racking (out of cellar)
+- **Line 23**: Beer transferred for bottling (out of bottling bulk)
+
+The form asks "what operation happened?" not "what location did you pick?" A location can hold mixed forms (e.g. cold storage with both bulk and kegs), and the user may misconfigure stages. The **operation** is the reliable source of truth.
+
+---
+
+## Current State (Hybrid and Fragile)
+
+
+| Source                         | How stage is determined                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------ |
+| Ledger TRANSFER (racking)      | `operation_type: 'racking'` → Line 4/22; column from **destination location stage**  |
+| Ledger TRANSFER (bottling)     | `operation_type: 'bottling'` or note; column from **location stage**                 |
+| Packaging runs (Line 9/10)     | Format (KEG/BOTTLE/CAN) → stage hardcoded (racking_keg, case) — **operation-driven** |
+| Removals (Line 14–21)          | `consumption_form` when present, else **location stage**                             |
+| Inventory at rest (Line 1, 33) | **Location stage** (where beer sits)                                                 |
+
+
+So packaging runs already use operation-driven stage; ledger movements use location. That inconsistency is the "tricky shit."
+
+---
+
+## Proposed Direction: Operation-Driven Stage
+
+### 1. Stage from operation, not location (for movements)
+
+For ledger entries that represent **movements** (RECEIVE, TRANSFER_IN/OUT, CONSUME from removals):
+
+- **operation_type** (or equivalent) drives the TTB column:
+  - `production_complete` → cellar (b)
+  - `racking` → racking_keg (d) for destination
+  - `bottling` / `canning` → case (f) for destination
+  - `transfer` (generic) → fallback to location stage
+- Add optional `data.ttb_stage` on ledger entries for explicit override when operation_type is ambiguous.
+
+### 2. Location stage for "at rest" only
+
+- **Line 1 (beginning inventory)** and **Line 33 (ending inventory)**: Keep location stage. Beer at rest is "where is it stored?" — location is correct.
+- If a location holds mixed forms, we have a design choice: (A) require locations to be stage-pure (one stage per location), or (B) add per-entry stage for RECEIVE/TRANSFER so we know "this 2 bbl at Cold Storage is in keg form." Option B is more flexible but requires ledger entries to carry stage.
+
+### 3. Packaging = Mark Production Complete (single flow)
+
+Today:
+
+- **Racking** (Racking.vue): Separate flow. Creates ledger TRANSFER with `operation_type: 'racking'`.
+- **Packaging** (BatchDetail modal): Separate flow. Creates `packaging_runs` record. Does not create beer ledger entries.
+
+**Merge:** Racking and packaging are the same thing — packaging happens at the end when you **Mark Production Complete**. Ledger entries are created from that single flow. No separate Racking view or Packaging modal.
+
+**Mark Production Complete** becomes the packaging step. User chooses output:
+
+- **To cellar** (bulk): RECEIVE bulk beer at cellar. operation_type = production_complete.
+- **To serving tank**: RECEIVE bulk beer at tank location. operation_type = production_complete.
+- **To packaged (keg)**: CONSUME bulk + CONSUME empty kegs → RECEIVE packaged beer (ea). operation_type = racking.
+- **To packaged (case)**: CONSUME bulk + CONSUME supplies (cans, caps) → RECEIVE packaged beer (ea). operation_type = bottling/canning.
+
+The ledger is the source of truth. `packaging_runs` table can be deprecated or derived from ledger entries with operation_type racking/bottling/canning.
+
+### 4. Implications for keg supply and packaged beer
+
+Once stage is operation-driven:
+
+- **Empty kegs**: Packaging items (Keg 1/2 bbl, Keg 1/6 bbl). Consumed when racking.
+- **Filled kegs**: Packaged beer items (unit ea, e.g. "House IPA 1/6 bbl") — see Dual Tracking below. Racking creates RECEIVE of packaged item; operation_type = racking for TTB column.
+- **Cases**: Same pattern. Packaged beer items (ea) with volume_per_unit for TTB.
+
+---
+
+## Dual Tracking: Volume (TTB) + Discrete Count (Operations)
+
+**Requirement:** We need volume (bbl) for TTB, but once beer is kegged or cased, we also need **discrete counts** for operational inventory: "How many full kegs of House IPA at Keg Storage?" not just "2.5 bbl."
+
+### Approach: Packaged beer as separate items (unit ea)
+
+- **Bulk beer**: House IPA (unit `bbl`) — cellar, tanks. Volume-based. Current model.
+- **Packaged beer**: House IPA 1/6 bbl (unit `ea`) — each keg = 1 ea. Item has `data.volume_per_unit` (e.g. 0.16 bbl for 1/6 bbl) for TTB conversion.
+- **Packaging flow (at Mark Production Complete)**: When output is keg — CONSUME bulk beer (X bbl) + CONSUME empty kegs (Y ea) → RECEIVE packaged beer (Y ea of "House IPA 1/6 bbl") at destination.
+- **Operations**: Inventory shows "15 kegs of House IPA 1/6 bbl at Keg Storage."
+- **TTB**: TTBFormService sums beer items; for items with `volume_per_unit`, converts `quantity × volume_per_unit` to barrels. Total beer = bulk bbl + packaged ea × conversion.
+
+### Item structure for packaged beer
+
+`volume_per_unit` (bbl per ea) is the only required extra field — it drives TTB conversion. The item name (e.g. "House IPA 1/6 bbl") already conveys the format for display.
+
+
+| Field                  | Bulk beer     | Packaged beer (keg)   | Packaged beer (case) |
+| ---------------------- | ------------- | --------------------- | -------------------- |
+| category               | Finished Beer | Finished Beer         | Finished Beer        |
+| unit                   | bbl           | ea                    | ea                   |
+| data.volume_per_unit   | —             | 0.16 (1/6 bbl)        | ~0.09 (12pk)         |
+| data.base_beer_item_id | —             | optional link to bulk | optional             |
+
+
+### Implications
+
+1. **Item creation**: When packaging (at Mark Production Complete), resolve or create packaged beer item (e.g. "House IPA 1/6 bbl"). Same pattern as per-batch beer items.
+2. **Ledger**: Packaged beer entries use `quantity` in ea. TTBFormService multiplies by `volume_per_unit` when summing.
+3. **On-hand cache**: Works as-is. `getTotalOnhand(itemId)` returns ea for packaged items. UI shows "15 kegs" or "15 ea".
+4. **Removals / Sales**: When selling kegs, CONSUME packaged item (ea). TTB gets volume via conversion.
+5. **Cases**: Same pattern — "House IPA 12pk" (ea, volume_per_unit for 12×12oz).
+
+---
+
+## What Needs to Change
+
+### Phase 1: Operation-driven stage for ledger movements
+
+1. **TTBFormService**: For movement lines (4, 9, 10, 22, 23, 24, etc.), derive column from `operation_type` (and `data.ttb_stage` when present) instead of `location.stage`. Fallback to location stage only when operation_type is generic/absent.
+2. **Ledger entries**: Ensure racking, bottling, production_complete always set `operation_type`. No schema change if we rely on existing field.
+3. **Packaging runs**: Will be deprecated. Ledger entries from Mark Production Complete (packaging) become the source for Line 9/10.
+
+### Phase 2: Packaged beer items and dual tracking
+
+1. **Item schema**: Add `data.volume_per_unit` (bbl per ea) for packaged beer items. Category Finished Beer; unit = ea.
+2. **Item creation**: Resolve or create packaged beer item per beer×format (e.g. "House IPA 1/6 bbl") — similar to getOrCreateBeerItemForBatch.
+3. **TTBFormService**: When summing beer for TTB lines, for items with `volume_per_unit`, use `quantity × volume_per_unit` (convert ea to bbl). Bulk items (unit bbl) use quantity as-is.
+4. **Mark Production Complete** (packaging): When output is keg — RECEIVE at vessel location (Line 2) + TRANSFER_OUT from vessel location (Line 22) + CONSUME empty kegs + RECEIVE packaged (ea) at destination (Line 9). All use the source tank's bound location. Requires vessel = location for fermenters/brites (same pattern as serving tanks).
+
+### Phase 3: Merge racking + packaging into Mark Production Complete
+
+1. **Remove Racking view** as separate flow. Packaging (keg, bottle, can) happens in Mark Production Complete.
+2. **Remove Packaging modal** as separate flow. Same.
+3. **Deprecate or derive packaging_runs**: Ledger entries with operation_type racking/bottling/canning are the source of truth. TTBFormService uses ledger for Line 9/10, not packaging_runs table.
+
+### Phase 4: Location stage clarification
+
+1. **Location form**: Clarify that stage is for "inventory at rest" (Line 1, 33). For movements, the operation defines the column.
+2. **Validation**: Consider requiring stage when location "holds finished beer" (already in LocationForm). No change to schema.
+
+---
+
+## Tricky Bits to Resolve
+
+### Line 2 vs Line 9 (and Line 22) — Explained
+
+The TTB form models beer moving through **stages**. These three lines work together:
+
+
+| Line        | Side      | Meaning                                         | Current source                                       |
+| ----------- | --------- | ----------------------------------------------- | ---------------------------------------------------- |
+| **Line 2**  | Additions | Beer produced by fermentation                   | RECEIVE with `data.source === 'production_complete'` |
+| **Line 22** | Removals  | Beer transferred for racking (bulk left cellar) | TRANSFER_OUT with `operation_type === 'racking'`     |
+| **Line 9**  | Additions | Beer racked (beer now in keg form)              | Packaging runs (KEG) or ledger RECEIVE packaged      |
+
+
+**The flow TTB expects:** Beer is produced (Line 2) → bulk in cellar. Bulk is transferred for racking (Line 22) → leaves cellar. Beer is racked (Line 9) → appears in kegs. Same volume, three lines, no double-count.
+
+**When you go straight from vessel to keg** (no bulk cellar step): We never have bulk on the ledger. But TTB still wants Line 2 (produced), Line 22 (transferred for racking), and Line 9 (racked). The fix: **create the full three-entry flow** using the **locations bound to the tanks**:
+
+1. **RECEIVE** at the source vessel's location (brite tank) — `data.source = 'production_complete'` → Line 2
+2. **TRANSFER_OUT** from that same vessel location — `operation_type = 'racking'` → Line 22
+3. **RECEIVE packaged** at keg destination — `operation_type = 'racking'` → Line 9
+
+Same volume, three ledger entries. The RECEIVE and TRANSFER_OUT both use the tank's bound location. This requires vessels (fermenters, brites) to have `location_id` like serving tanks do. The bulk exists at the tank location; we RECEIVE there, then TRANSFER_OUT from there. Form totals work out.
+
+**Alternative (simpler but risky):** Single RECEIVE packaged that feeds Line 9 only; Line 2 = 0, Line 22 = 0. That underreports production and may not satisfy TTB. The three-entry approach is the safe convention.
+2. **Column mapping**: Code uses `racking_keg: 'd'`, `bottling_bulk: 'e'`, `case: 'f'`. TTB form columns (b–g) — verify against [ttb.pdf](platforms/console/public/ttb.pdf) and design doc. Design doc says (c) Racking Keg, (d) Bottling Bulk, (e) Case; code differs. Reconcile.
+3. **Backward compatibility**: Existing ledger entries may lack operation_type. Fallback to location stage. Migration not required for old data. Existing packaging_runs: migrate or deprecate; TTB Line 9/10 switch to ledger-only.
+
+---
+
+## Recommended Order
+
+1. **Phase 1** (TTBFormService): Operation-driven column for movement lines. Low risk.
+2. **Phase 2** (Packaged beer + dual tracking): Packaged beer items (ea, volume_per_unit), TTBFormService ea→bbl conversion, Mark Production Complete packaging flow.
+3. **Phase 3** (Merge): Remove Racking view and Packaging modal; packaging lives in Mark Production Complete. Deprecate packaging_runs; ledger is source of truth for Line 9/10.
+4. **Phase 4**: Location stage clarification as needed.
+
+---
+
+## Summary
+
+
+| Current                              | Proposed                                                                |
+| ------------------------------------ | ----------------------------------------------------------------------- |
+| Column from location stage           | Column from operation_type (racking → keg, bottling → case)             |
+| Location stage = primary             | Location stage = at-rest inventory only                                 |
+| Racking + Packaging = separate flows | Packaging = Mark Production Complete; ledger entries created from there |
+| packaging_runs = metadata, no beer   | Ledger is source of truth; packaging_runs deprecated                    |
+| Beer = volume only (bbl)             | Bulk beer (bbl) + packaged beer (ea with volume_per_unit for TTB)       |
+
+
+This rework makes TTB reporting align with how brewing actually works: the process defines the form (bulk → keg → case), not the storage bin. Packaged beer is tracked by count (kegs, cases) for operations while TTB gets volume via conversion.

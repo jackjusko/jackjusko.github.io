@@ -1,0 +1,25 @@
+flowchart TB
+  subgraph inventoryEntities [Entities]
+    Items[Items]
+    Locations[Locations]
+    LedgerEntries[ledger_entries]
+    OnhandCache[onhand_cache]
+    ParLevels[ParLevels\nindividual + global]
+  end
+
+  subgraph ledgerTypes [Transaction types]
+    RECEIVE[RECEIVE]
+    CONSUME[CONSUME]
+    TRANSFER[TRANSFER_IN/OUT]
+    COUNT[COUNT_ADJUST]
+    REVERSAL[REVERSAL]
+  end
+
+  LedgerEntries --> OnhandCache
+  Items --> LedgerEntries
+  Locations --> LedgerEntries
+  ParLevels --> Items
+  ParLevels --> Locations
+  RECEIVE --> LedgerEntries
+  CONSUME --> LedgerEntries
+  TRANSFER --> LedgerEntries

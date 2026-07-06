@@ -1,0 +1,30 @@
+flowchart TB
+  subgraph users [Users]
+    MobileUser[Mobile User]
+    DesktopUser[Desktop User]
+  end
+
+  subgraph clients [Client applications]
+    MobileApp[brewledger-app\nCapacitor iOS/Android]
+    ConsoleApp[console\nDesktop SPA]
+  end
+
+  subgraph backend [Backend]
+    Express[Express API]
+    SQLite[(SQLite)]
+  end
+
+  subgraph external [External]
+    Stripe[Stripe\nCheckout / Portal / Webhooks]
+    TTB[TTB Form 5130.9\nReporting]
+  end
+
+  MobileUser --> MobileApp
+  DesktopUser --> ConsoleApp
+  MobileApp -->|HTTPS API + Sync| Express
+  ConsoleApp -->|HTTPS API + Sync| Express
+  Express --> SQLite
+  Express -->|Webhooks| Stripe
+  MobileApp -->|Checkout / Portal| Stripe
+  ConsoleApp -->|Checkout / Portal| Stripe
+  ConsoleApp -->|Generate PDF| TTB
