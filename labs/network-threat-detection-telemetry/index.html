@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Network Threat Detection and Telemetry Analysis - Jack Jusko</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-stone-50 font-sans text-stone-900 antialiased">
+  <main class="flex min-h-screen items-start justify-center px-6 py-8 sm:py-10">
+    <div class="w-full max-w-3xl">
+      <nav class="mb-8">
+        <a href="../../index.html" class="text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors">← Back to home</a>
+      </nav>
+
+      <article class="space-y-10">
+        <header class="space-y-4 border-b border-stone-200 pb-8">
+          <h1 class="text-3xl font-semibold tracking-tight">Advanced Network Threat Detection and Telemetry Analysis</h1>
+          <p class="text-lg text-stone-600">Deploying network IDS telemetry and triaging reconnaissance in an isolated VMware sandbox (July 2026).</p>
+        </header>
+
+        <p class="leading-relaxed text-stone-700">
+          This report documents a self-contained network security lab designed to practice identifying and triaging reconnaissance and directory enumeration attacks using an open-source Intrusion Detection System (Suricata) paired with a centralized Security Information and Event Management (SIEM) platform (Wazuh). It builds on the Wazuh installation from my previous brute-force detection lab. The narrative covers environment setup, dual-homed sensor architecture, attack simulation from both Layer 4 and Layer 7, SIEM triage of Suricata telemetry, and the troubleshooting process when the Wazuh agent's event queue saturated under high-volume Gobuster traffic.
+        </p>
+
+        <nav class="rounded-lg border border-stone-200 bg-white p-6">
+          <h2 class="mb-4 text-xs font-medium uppercase tracking-wider text-stone-400">Table of Contents</h2>
+          <ul class="space-y-2 text-sm text-stone-600">
+            <li><a href="#executive-summary" class="hover:text-stone-900 hover:underline">Executive Summary</a></li>
+            <li><a href="#technologies" class="hover:text-stone-900 hover:underline">Technologies Used</a></li>
+            <li><a href="#environment" class="hover:text-stone-900 hover:underline">Environment and Network Topology</a></li>
+            <li><a href="#implementation" class="hover:text-stone-900 hover:underline">Implementation</a></li>
+            <li><a href="#attack" class="hover:text-stone-900 hover:underline">Attack Simulation</a></li>
+            <li><a href="#detection" class="hover:text-stone-900 hover:underline">Detection and Analysis</a></li>
+            <li><a href="#issues" class="hover:text-stone-900 hover:underline">Issues Encountered and Resolution</a></li>
+            <li><a href="#appendix" class="hover:text-stone-900 hover:underline">Appendix: Configuration Notes</a></li>
+          </ul>
+        </nav>
+
+        <section id="executive-summary" class="space-y-4">
+          <h2 class="text-xl font-semibold">Executive Summary</h2>
+          <p class="leading-relaxed text-stone-700">
+            I designed, deployed, and triaged an enterprise-grade network threat detection system within a completely isolated virtual sandbox. By combining Suricata with Wazuh, I established full network visibility and security analytics across the wire. My key objectives were to validate network visibility through promiscuous mode on a virtual broadcast domain, deploy a dual-homed security sensor to segregate attack traffic from SIEM reporting pipelines, analyze high-fidelity signature alerts while observing the performance boundaries of endpoint log transmission agents, and simulate real-world reconnaissance behaviors to dissect how network footprints translate to structured JSON telemetry alerts.
+          </p>
+        </section>
+
+        <section id="technologies" class="space-y-4">
+          <h2 class="text-xl font-semibold">Technologies Used</h2>
+          <ul class="list-inside list-disc space-y-2 leading-relaxed text-stone-700">
+            <li><strong>Suricata:</strong> Open-source network IDS/IPS for signature-based threat detection</li>
+            <li><strong>Wazuh:</strong> SIEM platform for centralized log ingestion and alert triage</li>
+            <li><strong>Ubuntu 24.04:</strong> Operating system for the Suricata sensor and victim web server</li>
+            <li><strong>Kali Linux:</strong> Attacker environment for offensive simulation tools</li>
+            <li><strong>Apache:</strong> Web server on the victim machine serving as the Layer 7 target</li>
+            <li><strong>Nmap:</strong> Network scanner used for Layer 4 stealth reconnaissance</li>
+            <li><strong>Gobuster:</strong> Directory enumeration tool for Layer 7 web fuzzing</li>
+            <li><strong>VMware Workstation Player 17:</strong> Virtualization platform for the isolated lab network</li>
+            <li><strong>jq:</strong> Command-line JSON processor for Suricata output analysis</li>
+            <li><strong>Emerging Threats Open:</strong> Threat intelligence signature feed for Suricata</li>
+          </ul>
+        </section>
+
+        <section id="environment" class="space-y-4">
+          <h2 class="text-xl font-semibold">Environment and Network Topology</h2>
+          <p class="leading-relaxed text-stone-700">
+            I hard-configured the lab to use the private, non-routable RFC 1918 Class C space <code>192.168.10.0/24</code> (subnet mask <code>255.255.255.0</code>) to completely isolate malicious scans from my physical home LAN. I connected all three machines to the same LAN segment through VMware Workstation Player 17 and manually configured static IPs for each node:
+          </p>
+          <ul class="list-inside list-disc space-y-2 leading-relaxed text-stone-700">
+            <li><strong>Kali Linux</strong> (<code>192.168.10.5</code>): Threat actor / simulation station. NIC 2 disconnected during attack phase.</li>
+            <li><strong>Suricata IDS Host</strong> (<code>192.168.10.10</code>): Network security sensor. NIC 2 on DHCP for out-of-band management to the Wazuh manager.</li>
+            <li><strong>Ubuntu Victim VM</strong> (<code>192.168.10.20</code>): Target web infrastructure running Apache. NIC 2 disconnected during attack phase.</li>
+          </ul>
+          <p class="leading-relaxed text-stone-700">
+            I enabled promiscuous mode globally on the virtual switch segment, forcing the Suricata host network card to pass all packets traveling across the switch up to the detection engine rather than dropping frames not explicitly addressed to its own MAC address. I deliberately dual-homed the Suricata IDS VM with two distinct NICs: NIC 1 acts as a blind sniffer on the internal switch with no default gateway, while NIC 2 serves as a dedicated out-of-band management pipeline to stream security events cleanly to the master Wazuh Manager without routing logs through an active attack path.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            Because I needed internet access to download packages before isolating the network, I gave each VM two virtual adapters: one NAT interface for package installations and one LAN segment adapter for the simulation. After staging dependencies, I disabled the NAT adapters on the Kali and Victim nodes and left only the Suricata VM connected to the Wazuh agent via its management interface.
+          </p>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/networking/vmware-lan-network-config.png" alt="VMware LAN segment and static IP assignment" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 1: VMware LAN segment and static IP assignment for victim and attacker VMs</figcaption>
+          </figure>
+        </section>
+
+        <section id="implementation" class="space-y-4">
+          <h2 class="text-xl font-semibold">Implementation</h2>
+          <p class="leading-relaxed text-stone-700">
+            I implemented the lab in three phases:
+          </p>
+
+          <h3 class="text-lg font-medium text-stone-800">Phase I: Pre-Isolation Dependency Staging</h3>
+          <p class="leading-relaxed text-stone-700">
+            While internet access was active, I provisioned Apache2 and network utility toolsets on the victim node, updated the Kali application suite to ensure Gobuster and the dirb common wordlist were locally cached, installed Suricata alongside jq on the security sensor, synchronized the latest Emerging Threats Open signature bundle, and installed and registered the Wazuh agent daemon on the sensor operating system.
+          </p>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/networking/victim-apache-install.png" alt="Apache web server installed on victim" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 2: Apache web server installed on the victim machine</figcaption>
+          </figure>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/networking/suricata-wazuh-agent-install.png" alt="Wazuh agent installation on Suricata VM" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 3: Wazuh agent installation on the Suricata monitoring VM</figcaption>
+          </figure>
+
+          <h3 class="text-lg font-medium text-stone-800">Phase II: Network Isolation and Link Control</h3>
+          <p class="leading-relaxed text-stone-700">
+            I severed WAN connections by disconnecting the internet-facing adapters on both the Kali attacker and victim nodes within the hypervisor. I swapped local OS configuration from dynamic DHCP to persistent static variables matching the internal lab subnet schema, and issued raw kernel commands on the Suricata node to force the sniffing interface card into absolute listening mode.
+          </p>
+
+          <h3 class="text-lg font-medium text-stone-800">Phase III: Intrusion Engine Tuning and Telemetry Pipelines</h3>
+          <p class="leading-relaxed text-stone-700">
+            I reconfigured <code>suricata.yaml</code> to restrict internal scanning tracking exclusively to <code>192.168.10.0/24</code>, mapped Suricata's multi-threaded packet processing loops onto the validated interface (<code>ens33</code>) capturing internal traffic frames, and configured the local Wazuh agent (<code>ossec.conf</code>) to actively ingest and tail Suricata's unified JSON output stream (<code>eve.json</code>).
+          </p>
+        </section>
+
+        <section id="attack" class="space-y-4">
+          <h2 class="text-xl font-semibold">Attack Simulation</h2>
+          <p class="leading-relaxed text-stone-700">
+            With network containment active and the logging pipeline fully established, I fired two core adversarial techniques from the Kali platform:
+          </p>
+
+          <h3 class="text-lg font-medium text-stone-800">Vector A: Layer 4 Network Reconnaissance (Nmap Stealth Scan)</h3>
+          <p class="leading-relaxed text-stone-700">
+            I ran <code>nmap -sS -A -v 192.168.10.20</code> to send raw TCP packets with the SYN flag activated without completing the three-way handshake. Nmap compared the subtle TCP window properties and packet responses from the victim machine against its internal catalog to reverse-engineer the host operating system type and map active listener ports.
+          </p>
+
+          <h3 class="text-lg font-medium text-stone-800">Vector B: Layer 7 Directory Enumeration (Web Fuzzing)</h3>
+          <p class="leading-relaxed text-stone-700">
+            I ran <code>gobuster dir -u http://192.168.10.20 -w /usr/share/wordlists/dirb/common.txt</code> to hammer the target web server with consecutive rapid-fire HTTP GET transactions mapping to common directory paths, identifying hidden administrative interfaces based on response code metrics.
+          </p>
+        </section>
+
+        <section id="detection" class="space-y-4">
+          <h2 class="text-xl font-semibold">Detection and Analysis</h2>
+          <p class="leading-relaxed text-stone-700">
+            From the defense perspective, I reviewed the centralized Wazuh dashboard and isolated indicators of compromise using the following telemetry criteria. I filtered the SIEM data array using <code>rule.groups: "suricata"</code>, which surfaced distinct signature rule triggers generated by the raw Nmap scan, pointing to anomalous flag combinations and explicit OS identification attempts.
+          </p>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/networking/wazuh-suricata-nmap-alerts.png" alt="Suricata Nmap scan alerts in Wazuh" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 4: Suricata logs detecting the Nmap scan appearing in Wazuh</figcaption>
+          </figure>
+
+          <p class="leading-relaxed text-stone-700">
+            After confirming Nmap detection, I ran the Gobuster directory enumeration attack against the Apache client on the victim machine. The Gobuster output showed the directories and response codes discovered during the fuzzing run.
+          </p>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/networking/kali-gobuster-results.png" alt="Gobuster directory enumeration results" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 5: Gobuster directory enumeration results on the Kali attacker</figcaption>
+          </figure>
+
+          <p class="leading-relaxed text-stone-700">
+            I also evaluated the deeper raw JSON objects nested inside the Suricata alert scheme, which allowed me to inspect transport protocol states, verify the attacker-controlled source IP (<code>192.168.10.5</code>), and evaluate signature IDs derived from the Emerging Threats open-source intelligence feed.
+          </p>
+
+          <figure class="my-6">
+            <img src="../../assets/labs/networking/wazuh-nmap-signature-alert.png" alt="Wazuh Nmap signature alert" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+            <figcaption class="mt-2 text-sm text-stone-500 text-center">Figure 6: Wazuh event with ET SCAN Possible Nmap User-Agent Observed signature</figcaption>
+          </figure>
+        </section>
+
+        <section id="issues" class="space-y-4">
+          <h2 class="text-xl font-semibold">Issues Encountered and Resolution</h2>
+          <p class="leading-relaxed text-stone-700">
+            When I ran the Gobuster directory enumeration attack, the Wazuh agent event queue overloaded under the volume of events generated by the brute-force-style HTTP requests. I saw "Agent event queue is full" alerts on the dashboard as the local internal software buffers were saturated by the volume of raw Suricata events.
+          </p>
+          <p class="leading-relaxed text-stone-700">
+            I changed the Wazuh agent queue size to 80,000 and the events per second limit to 1,000 (from the defaults of 5,000 and 500 respectively), then restarted the Wazuh agent and ran the Gobuster scan again. I continued to have issues with the agent dropping events, so I opted to disable the client buffer entirely for this simulation to prevent validation loops from dropping critical security events during the automated flood.
+          </p>
+        </section>
+
+        <section id="appendix" class="space-y-4">
+          <h2 class="text-xl font-semibold">Appendix: Configuration Notes</h2>
+          <p class="leading-relaxed text-stone-700">
+            The following configuration changes were central to making the telemetry pipeline work:
+          </p>
+          <ul class="list-inside list-disc space-y-2 leading-relaxed text-stone-700">
+            <li><strong>suricata.yaml:</strong> I set the home network to <code>192.168.10.0/24</code> and bound the capture interface to <code>ens33</code>, the LAN segment adapter on the Suricata VM.</li>
+            <li><strong>ossec.conf:</strong> I added Suricata's <code>eve.json</code> output stream to the local Wazuh agent's log collection configuration so network alerts would flow into the SIEM.</li>
+            <li><strong>Promiscuous mode:</strong> I enabled promiscuous mode on the Suricata sniffing interface via kernel commands so the sensor could observe traffic between the Kali attacker and the victim, not just frames addressed to its own MAC.</li>
+            <li><strong>Agent buffer tuning:</strong> During Gobuster floods, I increased the client queue size and events-per-second limits, and ultimately disabled the client buffer to prevent event drops under high-volume directory enumeration traffic.</li>
+          </ul>
+        </section>
+
+      </article>
+    </div>
+  </main>
+</body>
+</html>

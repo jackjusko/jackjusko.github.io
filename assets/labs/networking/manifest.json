@@ -1,0 +1,10 @@
+{
+  "figures": [
+    { "order": 1, "file": "vmware-lan-network-config.png", "caption": "VMware LAN segment and static IP assignment for victim and attacker VMs", "captionPosition": "below", "pdfRef": "p3-i1" },
+    { "order": 2, "file": "victim-apache-install.png", "caption": "Apache web server installed on the victim machine", "captionPosition": "below", "pdfRef": "p4-i1" },
+    { "order": 3, "file": "suricata-wazuh-agent-install.png", "caption": "Wazuh agent installation on the Suricata monitoring VM", "captionPosition": "below", "pdfRef": "p4-i2" },
+    { "order": 4, "file": "wazuh-suricata-nmap-alerts.png", "caption": "Suricata logs detecting the Nmap scan appearing in Wazuh", "captionPosition": "below", "pdfRef": "p5-i1" },
+    { "order": 5, "file": "kali-gobuster-results.png", "caption": "Gobuster directory enumeration results on the Kali attacker", "captionPosition": "below", "pdfRef": "p6-i1" },
+    { "order": 6, "file": "wazuh-nmap-signature-alert.png", "caption": "Wazuh event with ET SCAN Possible Nmap User-Agent Observed signature", "captionPosition": "below", "pdfRef": "p7-i1" }
+  ]
+}
