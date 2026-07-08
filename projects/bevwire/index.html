@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BevWire — Jack Jusko</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral', flowchart: { useMaxWidth: true, htmlLabels: true } });
+  </script>
+</head>
+<body class="min-h-screen bg-stone-50 font-sans text-stone-900 antialiased">
+  <main class="flex min-h-screen items-start justify-center px-6 py-8 sm:py-10">
+    <div class="w-full max-w-5xl">
+      <nav class="mb-8">
+        <a href="../../index.html" class="text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors">← Back to home</a>
+      </nav>
+
+      <article class="space-y-10">
+        <header class="space-y-4 border-b border-stone-200 pb-8">
+          <div class="flex items-center gap-4">
+            <img src="../../assets/projects/bevwire/logo.png" alt="BevWire logo" class="h-12 w-12 rounded-lg border border-stone-200 bg-white object-contain p-1" width="48" height="48">
+            <div>
+              <h1 class="text-3xl font-semibold tracking-tight">BevWire</h1>
+              <p class="text-lg text-stone-600">File-based CMS and AI-assisted publishing for beverage industry news</p>
+            </div>
+          </div>
+          <p class="text-sm text-stone-500">
+            Technologies: Node.js, Express, Playwright, OpenAI, Tailwind, Capacitor
+          </p>
+          <p>
+            <a href="https://bevwire.com" class="text-sm font-medium text-stone-700 underline decoration-stone-300 underline-offset-2 hover:text-stone-900 hover:decoration-stone-500" target="_blank" rel="noopener noreferrer">View live site →</a>
+          </p>
+        </header>
+
+<p class="leading-relaxed text-stone-700">
+  I built <strong>BevWire</strong> as a full-stack digital publishing platform for beverage industry news. At its core, it is a markdown-native content management system with no editorial database: every article, report, and static page lives as a file on disk with YAML frontmatter, served by an Express server that renders HTML on each request.
+</p>
+
+<nav class="rounded-lg border border-stone-200 bg-white p-6">
+  <h2 class="mb-4 text-xs font-medium uppercase tracking-wider text-stone-400">Table of Contents</h2>
+  <ul class="space-y-2 text-sm text-stone-600">
+    <li><a href="#overview" class="hover:text-stone-900 hover:underline">Overview</a></li>
+    <li><a href="#the-problem" class="hover:text-stone-900 hover:underline">The Problem I Solved</a></li>
+    <li><a href="#system-architecture" class="hover:text-stone-900 hover:underline">System Architecture</a></li>
+    <li><a href="#file-based-cms" class="hover:text-stone-900 hover:underline">File-Based CMS Engine</a></li>
+    <li><a href="#newswire" class="hover:text-stone-900 hover:underline">Newswire: Scraper to Published Article</a></li>
+    <li><a href="#ai-editorial-pipeline" class="hover:text-stone-900 hover:underline">AI Editorial Pipeline</a></li>
+    <li><a href="#content-discovery" class="hover:text-stone-900 hover:underline">Content Discovery and Linking</a></li>
+    <li><a href="#platform-extensions" class="hover:text-stone-900 hover:underline">Platform Extensions</a></li>
+    <li><a href="#screenshots" class="hover:text-stone-900 hover:underline">Screenshots</a></li>
+    <li><a href="#technology-stack" class="hover:text-stone-900 hover:underline">Technology Stack</a></li>
+    <li><a href="#challenges" class="hover:text-stone-900 hover:underline">Challenges and Design Decisions</a></li>
+    <li><a href="#impact-and-scale" class="hover:text-stone-900 hover:underline">Impact and Scale</a></li>
+    <li><a href="#whats-next" class="hover:text-stone-900 hover:underline">What's Next</a></li>
+  </ul>
+</nav>
+<section id="overview" class="space-y-4">
+  <h2 class="text-xl font-semibold">Overview</h2>
+  <p class="leading-relaxed text-stone-700">I built <strong>BevWire</strong> as a full-stack digital publishing platform for beverage industry news. At its core, it is a <strong>markdown-native content management system</strong> with no editorial database: every article, report, and static page lives as a file on disk with YAML frontmatter, served by an Express server that renders HTML on each request.</p>
+  <p class="leading-relaxed text-stone-700">What makes BevWire more than a blog engine is the automation wrapped around it. I designed and implemented <strong>Newswire</strong>, an AI-assisted content pipeline that scrapes press releases from industry wire services, filters them for relevance, runs them through a multi-stage editorial synthesis process, and publishes finished articles into the live site — often within minutes of a release going live.</p>
+  <p class="leading-relaxed text-stone-700">The platform also includes satellite products built on the same foundation: a Capacitor mobile app, affiliate shop, searchable beer label archive, winery directory, weekly industry roundups, LinkedIn carousel generation, email-gated market reports, and automated internal linking across more than a thousand published articles.</p>
+  <p class="leading-relaxed text-stone-700">This document is the technical and architectural reference I use when explaining the system on a portfolio site. It is written in first person and focuses on engineering decisions, data flows, and capabilities — not business pricing or revenue.</p>
+</section>
+
+<section id="the-problem" class="space-y-4">
+  <h2 class="text-xl font-semibold">The Problem I Solved</h2>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">CMS overhead without a CMS</h3>
+  <p class="leading-relaxed text-stone-700">Traditional publishing stacks assume a database, an admin panel, and a build pipeline. For a solo-operated industry publication covering beer, wine, and spirits, that overhead did not match the workload. Content is write-once and read-many. Editors (in my case, mostly automation plus occasional manual pieces) produce markdown files; readers consume them on the web.</p>
+  <p class="leading-relaxed text-stone-700">I chose <strong>file-based storage</strong> so every article is git-trackable, human-readable, and editable with any text editor. There are no migrations, no ORM, and no risk of SQL injection on editorial content.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Volume that manual curation cannot handle</h3>
+  <p class="leading-relaxed text-stone-700">Beverage companies publish dozens of press releases daily across EIN Presswire, PR Newswire, BevNET, and similar services. Reading each release, deciding whether it matters, assigning a category, and writing a useful summary does not scale by hand.</p>
+  <p class="leading-relaxed text-stone-700">I needed a pipeline that could ingest high-volume, low-signal input and produce low-volume, high-signal output — without letting irrelevant corporate announcements through.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Discovery without manual tagging drudgery</h3>
+  <p class="leading-relaxed text-stone-700">Once articles exist, readers need to find related coverage. I did not want to manually curate &quot;related posts&quot; widgets on every page. The system needed <strong>machine-assigned tags</strong>, scoring algorithms, and automated internal links so discovery improved as the corpus grew.</p>
+</section>
+
+<section id="system-architecture" class="space-y-4">
+  <h2 class="text-xl font-semibold">System Architecture</h2>
+  <p class="leading-relaxed text-stone-700">BevWire is a <strong>dual-component system</strong>: a content aggregation pipeline (<code class="text-stone-800">newswire/</code>) and a web publishing engine (repository root). They share a filesystem contract — markdown files under <code class="text-stone-800">content/blog/</code> — but use different module systems on purpose.</p>
+  <div class="overflow-x-auto rounded-lg border border-stone-200 bg-white p-4 shadow-sm my-6"><div class="mermaid min-w-[48rem]">
+  flowchart TB
+      subgraph Pipeline [Newswire Pipeline]
+          Scraper[Playwright Scrapers]
+          Relevance[AI Relevance Gate]
+          Generator[Article Generator]
+          Writer[Markdown Writer]
+      end
+      subgraph WebEngine [Web Publishing Engine]
+          Express[Express SSR]
+          BlogService[Blog Service]
+          Templates[Templates + Tailwind]
+      end
+      subgraph Extensions [Platform Extensions]
+          Mobile[Capacitor App]
+          Shop[Affiliate Shop]
+          Dirs[Label + Winery Directories]
+          Offsite[Weekly Roundup + LinkedIn Carousel]
+      end
+      Pipeline -->|"content/blog/*.md"| WebEngine
+      Offsite --> WebEngine
+      WebEngine --> Mobile
+  </div></div>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Module boundary</h3>
+  <div class="overflow-x-auto rounded-lg border border-stone-200 my-4"><table class="w-full text-sm text-left"><thead class="border-b border-stone-200 bg-stone-100 text-stone-600"><tr><th class="px-4 py-3 font-medium">Component</th><th class="px-4 py-3 font-medium">Location</th><th class="px-4 py-3 font-medium">Module system</th><th class="px-4 py-3 font-medium">Role</th></tr></thead><tbody class="divide-y divide-stone-200 text-stone-700"><tr><td class="px-4 py-3">Web engine</td><td class="px-4 py-3">Repository root</td><td class="px-4 py-3">CommonJS</td><td class="px-4 py-3">Express server, routing, templates, content services</td></tr><tr><td class="px-4 py-3">Newswire</td><td class="px-4 py-3"><code class="text-stone-800">newswire/</code></td><td class="px-4 py-3">ES modules</td><td class="px-4 py-3">Scrapers, AI pipeline, CLI tools</td></tr><tr><td class="px-4 py-3">Mobile app</td><td class="px-4 py-3"><code class="text-stone-800">bevwire-app/</code></td><td class="px-4 py-3">Capacitor 6</td><td class="px-4 py-3">Native shell loading production SSR in a WebView</td></tr></tbody></table></div>
+  <p class="leading-relaxed text-stone-700">The split is intentional. Newswire uses modern ES module patterns (top-level await, clean imports with Playwright and OpenAI SDK). The web engine stays on CommonJS for broad Express middleware compatibility. Both components are optimal for their jobs; they communicate through markdown files, not shared runtime imports.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Storage model</h3>
+  <p class="leading-relaxed text-stone-700">There is <strong>no editorial database</strong>. SQLite appears only for ancillary features (lead-magnet email signups, label archive, winery directory, affiliate shop catalog). All published articles are markdown with YAML frontmatter.</p>
+</section>
+
+<section id="file-based-cms" class="space-y-4">
+  <h2 class="text-xl font-semibold">File-Based CMS Engine</h2>
+  <p class="leading-relaxed text-stone-700">The web publishing engine is the magazine readers see at bevwire.com. I modeled it loosely as MVC: markdown files are the model, JavaScript string templates with Tailwind CSS are the view, and Express route handlers are the controller.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Content model</h3>
+  <p class="leading-relaxed text-stone-700">Articles live in a hierarchical folder structure:</p>
+  <pre class="overflow-x-auto rounded-lg border border-stone-200 bg-stone-100 p-4 my-4 text-sm text-stone-800"><code>content/blog/
+  ├── beer/
+  │   ├── industry-presswire/    (AI-generated; URLs use section key industry-press)
+  │   ├── brewery-deep-dive/
+  │   ├── editorials/
+  │   ├── reports/
+  │   ├── lists/
+  │   └── tails-ales-trails/
+  ├── wine/
+  │   ├── industry-presswire/
+  │   ├── editorials/
+  │   ├── reports/
+  │   └── lists/
+  └── spirits/
+      ├── industry-presswire/
+      ├── editorials/
+      ├── reports/
+      └── lists/</code></pre>
+  <p class="leading-relaxed text-stone-700">Each file carries YAML frontmatter. A typical industry-press article includes:</p>
+  <pre class="overflow-x-auto rounded-lg border border-stone-200 bg-stone-100 p-4 my-4 text-sm text-stone-800"><code>title: &quot;Glass Bottle Expansion: Coca‑Cola Consolidated Adds $35M Line at Indianapolis Facility&quot;
+  slug: glass-bottle-expansion-cocacola-consolidated-adds-35m-line-a
+  date: 2026-05-21
+  author: Sarah Chen
+  excerpt: &quot;Coca-Cola Consolidated to Invest $35 Million...&quot;
+  section: beer/industry-press
+  tags: [&quot;Bottles&quot;, &quot;Glass Packaging&quot;, &quot;Manufacturing Expansion&quot;]
+  faq: [{ question: &quot;...&quot;, answer: &quot;...&quot; }]
+  braveCitations: [{ url: &quot;https://...&quot;, title: null }]
+  companies: [{ name: &quot;Coca-Cola Consolidated&quot;, slug: &quot;coca-cola-consolidated&quot; }]</code></pre>
+  <p class="leading-relaxed text-stone-700">Note the distinction between <strong>folder names</strong> (<code class="text-stone-800">industry-presswire</code>) and <strong>section keys</strong> (<code class="text-stone-800">beer/industry-press</code>). Folder names reflect filesystem organization; section keys drive URLs, navigation, and filtering. I map between them in <code class="text-stone-800">config.js</code> and <code class="text-stone-800">services/blog.js</code>.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Section configuration</h3>
+  <p class="leading-relaxed text-stone-700">Site structure is declared once in <code class="text-stone-800">config.js</code> and drives navigation, sitemap generation, and the Capacitor app's native tabs:</p>
+  <pre class="overflow-x-auto rounded-lg border border-stone-200 bg-stone-100 p-4 my-4 text-sm text-stone-800"><code>sections: [
+    { key: 'beer', label: 'Beer', children: [
+      { key: 'beer/industry-press', label: 'Industry Press Analysis' },
+      { key: 'beer/brewery-deep-dive', label: 'Brewery Deep Dive' },
+      { key: 'beer/editorials', label: 'Editorials' },
+      { key: 'beer/reports', label: 'Reports' },
+      { key: 'beer/lists', label: 'Lists &amp; guides' }
+    ]},
+    // wine and spirits follow the same pattern
+  ]</code></pre>
+  <p class="leading-relaxed text-stone-700">The same <code class="text-stone-800">appNav</code> block in <code class="text-stone-800">config.js</code> is the single source of truth for web header links, footer menus, and native mobile navigation — synced to Android XML and iOS Swift via a code generator script.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Content loading and caching</h3>
+  <p class="leading-relaxed text-stone-700"><code class="text-stone-800">services/blog.js</code> recursively scans <code class="text-stone-800">content/blog/</code>, parses frontmatter with <code class="text-stone-800">js-yaml</code>, and builds an in-memory index sorted by date. I invalidate the cache using a fingerprint of file count plus maximum modification time — when any markdown file changes, the index rebuilds on the next request.</p>
+  <p class="leading-relaxed text-stone-700">This gives me always-fresh content without a separate build step or cache invalidation service.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Routing and SEO</h3>
+  <p class="leading-relaxed text-stone-700"><code class="text-stone-800">routes/blog.js</code> handles:</p>
+  <ul class="list-inside list-disc space-y-2 my-4 leading-relaxed text-stone-700"><li>Magazine-style homepage with hero, latest grid, and per-section carousels</li><li>Hierarchical section pages (<code class="text-stone-800">/section/beer</code>, <code class="text-stone-800">/section/beer/industry-press</code>)</li><li>Article pages at flat URLs (<code class="text-stone-800">/beer/industry-press/article-slug</code>)</li><li>Author profiles, company hub pages, site search, newsletter hub</li><li>Dynamic XML sitemap and IndexNow URL submission</li><li>JSON-LD structured data (Article, FAQPage, Organization, CollectionPage)</li><li>Public APIs (<code class="text-stone-800">/api/read-finder-index.json</code>, <code class="text-stone-800">/api/companies/search</code>)</li><li>Internal RAG API for industry-press markdown export (key-gated)</li></ul>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Article presentation patterns</h3>
+  <p class="leading-relaxed text-stone-700">AI-generated industry press articles follow <strong>The Takeaway pattern</strong>:</p>
+  <ol class="list-inside list-decimal space-y-2 my-4 leading-relaxed text-stone-700"><li><strong>The News</strong> — a short, factual summary in a light-blue callout (<code class="text-stone-800">.article-news</code>)</li><li><strong>The Takeaway</strong> — a longer editorial analysis in a warm-orange callout (<code class="text-stone-800">.article-takeaway</code>)</li><li><strong>Original Press Release</strong> — the full scraped source for readers who want the unfiltered announcement</li><li><strong>Sources consulted</strong> — vetted web research citations when the editorial pipeline used Brave Answers</li></ol>
+  <p class="leading-relaxed text-stone-700">Manual editorial content (deep dives, reports, lists) uses standard markdown without this structure.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Homepage curation logic</h3>
+  <p class="leading-relaxed text-stone-700">Industry press is valuable but secondary to original editorial. I exclude industry-press articles from the homepage hero and the &quot;latest stories&quot; column unless explicitly pinned via config. The hero prioritizes editorials, brewery deep dives, and reports. A separate &quot;Breaking News Analysis&quot; column surfaces the five newest industry-press posts site-wide.</p>
+  <p class="leading-relaxed text-stone-700">Industry press list cards use a shared press icon (<code class="text-stone-800">pressicon.avif</code>) instead of lead images — I removed per-article hero images from the pipeline to keep wire content visually distinct from editorial work.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Distribution and monetization (high level)</h3>
+  <ul class="list-inside list-disc space-y-2 my-4 leading-relaxed text-stone-700"><li>Google AdSense meta tags on all server-rendered pages</li><li>Beehiiv newsletter integration with delayed bottom-sheet signup prompt</li><li>Email-gated PDF market reports delivered via Amazon SES (SQLite signup tracking)</li><li>Affiliate shop at <code class="text-stone-800">/shop</code> (separate subsystem; see Platform Extensions)</li></ul>
+</section>
+
+<section id="newswire" class="space-y-4">
+  <h2 class="text-xl font-semibold">Newswire: Scraper to Published Article</h2>
+  <p class="leading-relaxed text-stone-700">Newswire is the automated content pipeline I built in <code class="text-stone-800">newswire/</code>. It follows a <strong>pipeline-with-gates</strong> pattern: scrape everything, filter aggressively, generate only what passes.</p>
+  <div class="overflow-x-auto rounded-lg border border-stone-200 bg-white p-4 shadow-sm my-6"><div class="mermaid min-w-[48rem]">
+  flowchart LR
+      EIN[EIN Presswire] --> Scrape
+      PRN[PR Newswire] --> Scrape
+      BevNET[BevNET] --> Scrape
+      Scrape[Playwright + Cheerio] --> Dedup[processedUrls.json]
+      Dedup --> Relevance[Relevance Checker]
+      Relevance -->|reject| Skip[Skip]
+      Relevance -->|beer/wine/spirits| Generate[Article Generator]
+      Generate --> Write[Markdown Writer]
+      Write --> LiveSite["content/blog/.../industry-presswire/"]
+      Write --> ArchiveDir["newswire/articles/"]
+  </div></div>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Scraping layer</h3>
+  <p class="leading-relaxed text-stone-700">Three source-specific scrapers use <strong>Playwright</strong> for browser automation (JavaScript-rendered listing pages) and <strong>Cheerio</strong> for fast HTML parsing:</p>
+  <div class="overflow-x-auto rounded-lg border border-stone-200 my-4"><table class="w-full text-sm text-left"><thead class="border-b border-stone-200 bg-stone-100 text-stone-600"><tr><th class="px-4 py-3 font-medium">Scraper</th><th class="px-4 py-3 font-medium">Source</th><th class="px-4 py-3 font-medium">Notes</th></tr></thead><tbody class="divide-y divide-stone-200 text-stone-700"><tr><td class="px-4 py-3"><code class="text-stone-800">einScraper.js</code></td><td class="px-4 py-3">EIN Presswire</td><td class="px-4 py-3">Paginated listing + article pages</td></tr><tr><td class="px-4 py-3"><code class="text-stone-800">prNewswireScraper.js</code></td><td class="px-4 py-3">PR Newswire</td><td class="px-4 py-3">Paginated consumer products feed</td></tr><tr><td class="px-4 py-3"><code class="text-stone-800">bevnetScraper.js</code></td><td class="px-4 py-3">BevNET PR</td><td class="px-4 py-3">Two-week date filter, no pagination</td></tr></tbody></table></div>
+  <p class="leading-relaxed text-stone-700">Each scraper extracts title, source URL, date, excerpt, and full body HTML. I run the CLI with:</p>
+  <pre class="overflow-x-auto rounded-lg border border-stone-200 bg-stone-100 p-4 my-4 text-sm text-stone-800"><code>cd newswire
+  npm run scrape -- --start-page 1 --end-page 5</code></pre>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Deduplication</h3>
+  <p class="leading-relaxed text-stone-700"><code class="text-stone-800">newswire/data/processedUrls.json</code> tracks every processed source URL. Re-runs skip already-ingested releases unless I pass <code class="text-stone-800">--force</code>. This makes the pipeline idempotent — safe to schedule daily without creating duplicates.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Relevance gate</h3>
+  <p class="leading-relaxed text-stone-700"><code class="text-stone-800">relevanceChecker.js</code> sends the full press release body to an AI model with strict criteria:</p>
+  <ul class="list-inside list-disc space-y-2 my-4 leading-relaxed text-stone-700"><li>Must be <strong>primarily</strong> about beverage alcohol (beer, wine, spirits, cider, hard seltzer, mead) or suppliers clearly serving that trade</li><li>Generic logistics, multi-sector market reports, and tangential industries are rejected</li><li>Assigns exactly one category: <code class="text-stone-800">beer</code>, <code class="text-stone-800">wine</code>, or <code class="text-stone-800">spirits</code> (no &quot;general&quot; bucket)</li></ul>
+  <p class="leading-relaxed text-stone-700">The gate reads the full scraped body, not just listing teasers — long bodies truncate at ~48k characters before the API call.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Dual write</h3>
+  <p class="leading-relaxed text-stone-700"><code class="text-stone-800">markdownWriter.js</code> writes every approved article twice:</p>
+  <ol class="list-inside list-decimal space-y-2 my-4 leading-relaxed text-stone-700"><li><strong>Archive copy</strong> — <code class="text-stone-800">newswire/articles/{slug}.md</code> (preserves the generation output)</li><li><strong>Live copy</strong> — <code class="text-stone-800">content/blog/{category}/industry-presswire/{slug}.md</code> (served by the website)</li></ol>
+  <p class="leading-relaxed text-stone-700">Category routing is automatic based on the relevance checker's <code class="text-stone-800">primaryCategory</code>.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Output structure (annotated sample)</h3>
+  <p class="leading-relaxed text-stone-700">Here is what a finished industry-press article looks like — excerpted from a Coca-Cola Consolidated glass bottling investment story:</p>
+  <p class="leading-relaxed text-stone-700"><strong>Frontmatter</strong> carries SEO title, tags, FAQ schema, Brave research citations, and company hub links.</p>
+  <p class="leading-relaxed text-stone-700"><strong>The News</strong> (factual, 1–2 paragraphs):</p>
+  <blockquote class="border-l-4 border-stone-300 pl-4 my-4 italic text-stone-600 leading-relaxed">Coca-Cola Consolidated announced a $35 million investment in Indianapolis to expand its manufacturing capabilities. The company plans to add a new glass bottle production line at its facility located at 5000 W. 25th Street, with construction set to begin in late 2026...</blockquote>
+  <p class="leading-relaxed text-stone-700"><strong>The Takeaway</strong> (editorial analysis, ~500–700 words):</p>
+  <blockquote class="border-l-4 border-stone-300 pl-4 my-4 italic text-stone-600 leading-relaxed">The news that Coca‑Cola Consolidated is adding a new glass bottle line to its Indianapolis plant might be framed as another capital‑expenditure headline, yet for those watching ingredient flows it signals a move toward premium packaging that could ripple through the supply chain...</blockquote>
+  <p class="leading-relaxed text-stone-700"><strong>Original Press Release</strong> (full scraped source, preserved verbatim below a rule line).</p>
+  <p class="leading-relaxed text-stone-700"><strong>Sources consulted</strong> (vetted URLs from web research, rendered as a bullet list).</p>
+  <p class="leading-relaxed text-stone-700">This three-layer structure lets readers scan the summary, read the analysis, or drill into the primary source — all on one page.</p>
+</section>
+
+<section id="ai-editorial-pipeline" class="space-y-4">
+  <h2 class="text-xl font-semibold">AI Editorial Pipeline</h2>
+  <p class="leading-relaxed text-stone-700">The article generator is the most complex part of Newswire. I split it into discrete stages so each step has a narrow job and failures are isolated.</p>
+  <div class="overflow-x-auto rounded-lg border border-stone-200 bg-white p-4 shadow-sm my-6"><div class="mermaid min-w-[48rem]">
+  flowchart TD
+      S1[Stage 1: Extract excerpt news FAQs tags]
+      S15[Stage 1.5: Editorial Pipeline]
+      Condense[Local LLM condense]
+      Brave[Brave web research]
+      Synth[OpenAI synthesis + guardrails]
+      S2[Stage 2: SEO headline generation]
+      Output[Final markdown + frontmatter]
+      S1 --> S15
+      S15 --> Condense --> Brave --> Synth
+      Synth --> S2
+      S2 --> Output
+  </div></div>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Stage 1: Structured extraction</h3>
+  <p class="leading-relaxed text-stone-700">A single OpenAI-compatible call produces:</p>
+  <ul class="list-inside list-disc space-y-2 my-4 leading-relaxed text-stone-700"><li><strong>EXCERPT</strong> — short natural summary for frontmatter</li><li><strong>NEWS_SUMMARY</strong> — factual who/what/when (becomes &quot;The News&quot;)</li><li><strong>FAQS</strong> — 3–5 question/answer pairs for FAQPage JSON-LD</li><li><strong>TAGS</strong> — 3–5 industry tags for discovery (<code class="text-stone-800">Packaging</code>, <code class="text-stone-800">Distribution</code>, <code class="text-stone-800">M&amp;A</code>, etc.)</li></ul>
+  <p class="leading-relaxed text-stone-700">There is no takeaway bullet block at this stage anymore. The long-form editorial content comes from Stage 1.5.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Stage 1.5: Editorial pipeline</h3>
+  <p class="leading-relaxed text-stone-700"><code class="text-stone-800">editorialPipeline.js</code> is where raw press releases become readable analysis. The flow:</p>
+  <ol class="list-inside list-decimal space-y-2 my-4 leading-relaxed text-stone-700"><li><strong>Condense</strong> — a local LLM strips the PR to proper nouns, numbers, dates, and checkable claims (~120k char input cap)</li><li><strong>Domain notes</strong> — keyword-scored industry primers inject guardrails (distribution logic, regulatory constraints, B2B vs retail tier discipline)</li><li><strong>Brave Answers</strong> — web research via Brave's chat API adds external context and citations</li><li><strong>Template pick</strong> — ~60/40 split between contrarian and compatibility templates, weighted by research depth</li><li><strong>Streaming synthesis</strong> — long-form takeaway prose with strict grounding rules</li><li><strong>Language pass</strong> — trims AI-sounding patterns, enforces prose flow</li><li><strong>Information-gain guardrail</strong> — audits thesis, retail math, ownership claims, regulatory advice</li></ol>
+  <p class="leading-relaxed text-stone-700">Key design constraints I enforced in prompts:</p>
+  <ul class="list-inside list-disc space-y-2 my-4 leading-relaxed text-stone-700"><li><strong>Numerical synthesis only when every operand appears</strong> in PR or Brave research — no invented market-capture math</li><li><strong>Distributor advice is conditional</strong> on PR type (exclusive deal vs general launch vs premises-only SKU)</li><li><strong>Superlatives require evidence</strong> — no &quot;largest&quot; or &quot;first&quot; without input support</li><li><strong>Regulatory guardrail</strong> — never advise bypassing three-tier system or TTB rules</li><li><strong>Opening paragraph</strong> orients the reader before structured analysis begins</li><li><strong>Target length</strong> — 495–715 words for the takeaway column</li></ul>
+  <p class="leading-relaxed text-stone-700">Brave citations are vetted one-by-one by the condenser model; social/UGC hosts are blocklisted. Surviving citations populate <code class="text-stone-800">braveCitations</code> frontmatter and render as a &quot;Sources consulted&quot; footer.</p>
+  <p class="leading-relaxed text-stone-700">An optional <strong>ownership/competitor guardrail</strong> extracts <code class="text-stone-800">companies</code> frontmatter (<code class="text-stone-800">{ name, slug }</code>) for company hub pages at <code class="text-stone-800">/company/:slug</code>.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Stage 2: SEO headline</h3>
+  <p class="leading-relaxed text-stone-700">After editorial synthesis completes, a separate call generates an optimized headline:</p>
+  <ul class="list-inside list-disc space-y-2 my-4 leading-relaxed text-stone-700"><li>Never reuses the wire headline verbatim</li><li>Maximum 80 characters</li><li>Leads with named company, brand, or product when available</li><li>Tuned for trade and analytical search intent</li></ul>
+  <p class="leading-relaxed text-stone-700">Example transformation: *&quot;Acme Corp Announces Q3 Earnings&quot;* → *&quot;Acme Corp's Q3 Realignment Reshapes Spirits Distribution Network&quot;*</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Author personas</h3>
+  <p class="leading-relaxed text-stone-700">Each generated article assigns a random author from <code class="text-stone-800">content/authors.json</code> for its beverage category. Each persona has a <code class="text-stone-800">voice</code> field that drives synthesis tone — synthetic news-desk journalists with distinct specialties (distribution, sustainability, bar culture, etc.).</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Post-publish editorial touch-ups</h3>
+  <p class="leading-relaxed text-stone-700"><code class="text-stone-800">scripts/industry-press-touch-ups.mjs</code> applies deterministic editorial notes to ~1-in-5 industry-press articles: verification notes, added context lines, or cross-reference callouts. This is a lightweight authenticity pass, not a rewrite.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Failure handling</h3>
+  <p class="leading-relaxed text-stone-700">If the editorial pipeline throws after retries, the article is not written. The scrape run logs the error, increments error stats, and moves on. Partial output never reaches the live site.</p>
+</section>
+
+<section id="content-discovery" class="space-y-4">
+  <h2 class="text-xl font-semibold">Content Discovery and Linking</h2>
+  <p class="leading-relaxed text-stone-700">Publishing articles is half the job. I built several systems so readers (and search engines) find related content without manual curation.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Tag-based related posts</h3>
+  <p class="leading-relaxed text-stone-700"><code class="text-stone-800">getRelatedPosts()</code> in <code class="text-stone-800">services/blog.js</code> scores every other article against the current one:</p>
+  <pre class="overflow-x-auto rounded-lg border border-stone-200 bg-stone-100 p-4 my-4 text-sm text-stone-800"><code>// Tag matching: +3 points per matching tag
+  score += matchingTags.length * 3;
+  
+  // Same category: +2 points
+  if (pCategory === currentCategory) score += 2;
+  
+  // Same subcategory type: +1 point
+  if (pType &amp;&amp; pType === currentType) score += 1;</code></pre>
+  <p class="leading-relaxed text-stone-700">The top-scoring posts appear in sidebar widgets. Separate helpers restrict results to evergreen content (excluding industry press) or pillar content for gateway list pages.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Automated internal linking</h3>
+  <p class="leading-relaxed text-stone-700"><code class="text-stone-800">services/contentLinker.js</code> injects up to four internal links per article before markdown rendering:</p>
+  <ol class="list-inside list-decimal space-y-2 my-4 leading-relaxed text-stone-700"><li><strong>Tag-driven pass</strong> — score eligible targets with the same weights as related posts, pick anchor text from overlapping tags or title words</li><li><strong>Term fallback</strong> — n-gram extraction with confidence scoring on editorial plain text</li></ol>
+  <p class="leading-relaxed text-stone-700">Industry press is never a link target (only evergreen content receives auto-links). The original press release block is never modified. Opportunities cache in <code class="text-stone-800">data/internalLinks.json</code> with a content fingerprint for invalidation.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Structured data and search</h3>
+  <ul class="list-inside list-disc space-y-2 my-4 leading-relaxed text-stone-700"><li><strong>FAQPage JSON-LD</strong> from frontmatter <code class="text-stone-800">faq</code> arrays (generated in Stage 1)</li><li><strong>Article schema</strong> with author Person nodes and publisher Organization</li><li><strong>Company hub pages</strong> with CollectionPage + about Organization</li><li><strong>Dynamic sitemap</strong> covering articles, sections, authors, companies, label directory, winery directory, and shop products</li><li><strong>IndexNow</strong> submission on content changes</li><li><strong><code class="text-stone-800">/llms.txt</code></strong> for LLM/agent discovery of site structure and API endpoints</li><li><strong>Read finder</strong> — client-side Fuse.js search over a JSON article index with ETag caching</li></ul>
+</section>
+
+<section id="platform-extensions" class="space-y-4">
+  <h2 class="text-xl font-semibold">Platform Extensions</h2>
+  <p class="leading-relaxed text-stone-700">These subsystems share the monorepo but are shorter sections — each solves a specific product need beyond core CMS + Newswire.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Weekly industry roundup</h3>
+  <p class="leading-relaxed text-stone-700"><code class="text-stone-800">newswire/src/weekly-roundup/</code> collects recent industry-press posts for one beverage vertical, curates them with OpenAI, reduces the corpus via OpenRouter, and synthesizes a single weekly report into <code class="text-stone-800">content/blog/{industry}/reports/weekly-roundup-{industry}-{date}.md</code>.</p>
+  <p class="leading-relaxed text-stone-700">The output includes prominent stories, cross-cutting trends, analysis, operator takeaways, and a &quot;what to watch&quot; section — with internal links back to source press articles.</p>
+  <p class="leading-relaxed text-stone-700">CLI: <code class="text-stone-800">npm run weekly-roundup -- --industry beer</code></p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">LinkedIn carousel PDF</h3>
+  <p class="leading-relaxed text-stone-700"><code class="text-stone-800">newswire/scripts/linkedin-carousel.mjs</code> picks a random industry-press article from the last 21 days, generates three insight blocks plus a post caption via local LLM, and renders a 5-page branded PDF with pdfkit. Output goes to <code class="text-stone-800">output/linkedin-carousels/</code> (local only, not served by the website).</p>
+  <p class="leading-relaxed text-stone-700">This is off-site marketing automation — useful for social distribution without touching the web stack.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Capacitor mobile app</h3>
+  <p class="leading-relaxed text-stone-700"><code class="text-stone-800">bevwire-app/</code> is a Capacitor 6 project that loads bevwire.com in a native WebView. I did not bundle article HTML locally; the app is a shell around production SSR.</p>
+  <p class="leading-relaxed text-stone-700">Key design choices:</p>
+  <ul class="list-inside list-disc space-y-2 my-4 leading-relaxed text-stone-700"><li><strong>Single nav source</strong> — <code class="text-stone-800">config.appNav</code> generates Android <code class="text-stone-800">more_menu.xml</code>, iOS <code class="text-stone-800">NavConfig.generated.swift</code>, and <code class="text-stone-800">nav.generated.json</code></li><li><strong>Embed mode</strong> — when the User-Agent contains <code class="text-stone-800">BevWireApp</code>, the server hides duplicate site chrome and shows native bottom tabs</li><li><strong>Bridge script</strong> — <code class="text-stone-800">bevwire-capacitor-bridge.js</code> handles Share, splash hide, network overlay, and a floating Share FAB</li></ul>
+  <p class="leading-relaxed text-stone-700">Bottom tabs: Home, Beer, Wine, Spirits, Search. Push notifications are not integrated yet.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Beer label directory</h3>
+  <p class="leading-relaxed text-stone-700">Merged from a legacy label archive project. SQLite-backed search at <code class="text-stone-800">/labels</code> with JPEG assets under <code class="text-stone-800">public/labels/</code>. Legacy URL 301 redirects preserve SEO from the old domain structure.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Winery directory</h3>
+  <p class="leading-relaxed text-stone-700">SQLite catalog at <code class="text-stone-800">/wineries</code> with structured data, FAQ content, and weather forecast integration (SevenTimer API). Uses the same blog layout with Capacitor embed support.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Affiliate shop</h3>
+  <p class="leading-relaxed text-stone-700">Modular provider-pattern storefront at <code class="text-stone-800">/shop</code>. Phase 1 ships a Wine.com affiliate catalog (~3,300 products) with Fuse.js client search, SSR first page, and Merchant Listings JSON-LD on detail pages.</p>
+  <p class="leading-relaxed text-stone-700">Architecture supports adding future providers (merch, direct inventory) without rewriting the catalog shell. See <code class="text-stone-800">shop/ARCHITECTURE.md</code> for the provider contract.</p>
+</section>
+
+<section id="screenshots" class="space-y-6">
+  <h2 class="text-xl font-semibold">Screenshots</h2>
+  <p class="leading-relaxed text-stone-700">Live pages from bevwire.com — homepage and automated industry-press output.</p>
+  <figure class="my-4">
+    <img src="../../assets/projects/bevwire/screenshots/homepage.png" alt="BevWire homepage with hero editorial and latest stories grid" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+    <figcaption class="mt-2 text-sm text-stone-500 text-center">Homepage — editorial hero, latest stories, and breaking news analysis column</figcaption>
+  </figure>
+  <figure class="my-4">
+    <img src="../../assets/projects/bevwire/screenshots/industry-press.png" alt="BevWire industry press article showing The News and The Takeaway layout" class="w-full rounded-lg border border-stone-200 shadow-sm" loading="lazy">
+    <figcaption class="mt-2 text-sm text-stone-500 text-center">Industry press article — The News / The Takeaway pattern from the Newswire pipeline</figcaption>
+  </figure>
+</section>
+<section id="technology-stack" class="space-y-4">
+  <h2 class="text-xl font-semibold">Technology Stack</h2>
+  <div class="overflow-x-auto rounded-lg border border-stone-200 my-4"><table class="w-full text-sm text-left"><thead class="border-b border-stone-200 bg-stone-100 text-stone-600"><tr><th class="px-4 py-3 font-medium">Layer</th><th class="px-4 py-3 font-medium">Technologies</th></tr></thead><tbody class="divide-y divide-stone-200 text-stone-700"><tr><td class="px-4 py-3"><strong>Web server</strong></td><td class="px-4 py-3">Node.js, Express 5.2, marked 17, js-yaml</td></tr><tr><td class="px-4 py-3"><strong>Styling</strong></td><td class="px-4 py-3">Tailwind CSS v4 (CDN), custom CSS in <code class="text-stone-800">public/styles.css</code></td></tr><tr><td class="px-4 py-3"><strong>Scraping</strong></td><td class="px-4 py-3">Playwright, Cheerio</td></tr><tr><td class="px-4 py-3"><strong>AI — extraction &amp; relevance</strong></td><td class="px-4 py-3">OpenAI-compatible API (local LM default: gpt-oss-20b)</td></tr><tr><td class="px-4 py-3"><strong>AI — editorial synthesis</strong></td><td class="px-4 py-3">OpenAI-compatible streaming client, Brave Answers API</td></tr><tr><td class="px-4 py-3"><strong>AI — weekly roundup</strong></td><td class="px-4 py-3">OpenAI (curation) + OpenRouter (reduce + synthesis)</td></tr><tr><td class="px-4 py-3"><strong>Image processing</strong></td><td class="px-4 py-3">Sharp (resize to 800px, JPEG conversion)</td></tr><tr><td class="px-4 py-3"><strong>CLI</strong></td><td class="px-4 py-3">Commander.js</td></tr><tr><td class="px-4 py-3"><strong>Email</strong></td><td class="px-4 py-3">AWS SES (<code class="text-stone-800">@aws-sdk/client-ses</code>) for lead-magnet PDF delivery</td></tr><tr><td class="px-4 py-3"><strong>Ancillary storage</strong></td><td class="px-4 py-3">sqlite3 (lead magnets, labels, wineries, shop catalog)</td></tr><tr><td class="px-4 py-3"><strong>Mobile</strong></td><td class="px-4 py-3">Capacitor 6 (Android + iOS)</td></tr><tr><td class="px-4 py-3"><strong>Client search</strong></td><td class="px-4 py-3">Fuse.js 7.3 (read finder, shop catalog)</td></tr><tr><td class="px-4 py-3"><strong>PDF generation</strong></td><td class="px-4 py-3">pdfkit (LinkedIn carousels), Playwright (lead-magnet reports)</td></tr></tbody></table></div>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Deployment</h3>
+  <ul class="list-inside list-disc space-y-2 my-4 leading-relaxed text-stone-700"><li>Express behind Let's Encrypt SSL (auto-detected in <code class="text-stone-800">server.js</code>)</li><li>File-system content — no build step for CSS or articles</li><li>Newswire scrape runs on a schedule or manually via CLI</li><li>Git tracks all markdown content; binary assets (images, PDFs) managed separately</li></ul>
+</section>
+
+<section id="challenges" class="space-y-4">
+  <h2 class="text-xl font-semibold">Challenges and Design Decisions</h2>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Why file-based over WordPress or a headless CMS</h3>
+  <p class="leading-relaxed text-stone-700">I weighed a traditional CMS against markdown-on-disk. For a publication with hundreds to low thousands of articles, the file approach wins on simplicity: version control, no migrations, human-readable content, instant publish on file write. The trade-off is no complex querying and no concurrent editing safeguards — acceptable for a single-operator publication.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Why server rendering over static generation</h3>
+  <p class="leading-relaxed text-stone-700">I chose SSR on each request rather than a static site generator. With in-process caching in <code class="text-stone-800">blog.js</code>, performance is fine at this scale. The win is zero build step: scrape a press release, write a markdown file, and it is live on the next HTTP request.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">AI authenticity without a human editor on every piece</h3>
+  <p class="leading-relaxed text-stone-700">The biggest risk in automated publishing is sounding like a robot — or worse, hallucinating facts. I addressed this with layered mitigations:</p>
+  <ul class="list-inside list-disc space-y-2 my-4 leading-relaxed text-stone-700"><li>Grounding rules that forbid inventing numbers not present in inputs</li><li>Brave web research with per-URL citation vetting</li><li>Multi-pass guardrails (synthesis → language pass → information-gain audit)</li><li>Anti-buzzword prompt engineering (&quot;write like you're telling a friend at a bar&quot;)</li><li>Deterministic post-publish touch-ups on a subset of articles</li><li>Publisher standards page explaining the pipeline to readers</li></ul>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Relevance gate evolution</h3>
+  <p class="leading-relaxed text-stone-700">Early versions required Midwest US geographic relevance and included a &quot;general&quot; category. I removed both as BevWire expanded to national/international beverage coverage with three strict categories. The gate also dropped &quot;craft-only&quot; language — the publication covers mass market through premium segments.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Visual hierarchy between wire and editorial</h3>
+  <p class="leading-relaxed text-stone-700">Industry press gets icon-based list cards, no homepage hero placement, and cross-link banners to editorial subcategories. This keeps automated wire content from crowding out the deep dives and reports that define the publication's editorial identity.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Dual module systems</h3>
+  <p class="leading-relaxed text-stone-700">Maintaining ES modules in Newswire and CommonJS at the root adds a boundary, but it keeps each component on its best footing. They do not import each other — the filesystem is the integration point.</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Security</h3>
+  <p class="leading-relaxed text-stone-700">API keys live in environment variables and <code class="text-stone-800">.env</code> files (gitignored). The RAG API for raw markdown export is key-gated and not listed on the public API docs page. Lead-magnet PDFs live outside <code class="text-stone-800">public/</code> and are delivered only via email after signup.</p>
+</section>
+
+<section id="impact-and-scale" class="space-y-4">
+  <h2 class="text-xl font-semibold">Impact and Scale</h2>
+  <p class="leading-relaxed text-stone-700">BevWire today operates as a full publishing stack from a single monorepo:</p>
+  <div class="overflow-x-auto rounded-lg border border-stone-200 my-4"><table class="w-full text-sm text-left"><thead class="border-b border-stone-200 bg-stone-100 text-stone-600"><tr><th class="px-4 py-3 font-medium">Indicator</th><th class="px-4 py-3 font-medium">Scale</th></tr></thead><tbody class="divide-y divide-stone-200 text-stone-700"><tr><td class="px-4 py-3">Total published articles</td><td class="px-4 py-3">1,015 markdown files</td></tr><tr><td class="px-4 py-3">Industry press — beer</td><td class="px-4 py-3">231 articles</td></tr><tr><td class="px-4 py-3">Industry press — wine</td><td class="px-4 py-3">119 articles</td></tr><tr><td class="px-4 py-3">Industry press — spirits</td><td class="px-4 py-3">495 articles</td></tr><tr><td class="px-4 py-3">Beverage verticals</td><td class="px-4 py-3">3 (beer, wine, spirits)</td></tr><tr><td class="px-4 py-3">Press sources monitored</td><td class="px-4 py-3">3 (EIN, PR Newswire, BevNET)</td></tr><tr><td class="px-4 py-3">Major subsystems</td><td class="px-4 py-3">8 (web engine, Newswire, weekly roundup, LinkedIn carousel, mobile app, label directory, winery directory, affiliate shop)</td></tr></tbody></table></div>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">Daily operations cadence</h3>
+  <p class="leading-relaxed text-stone-700">A typical day:</p>
+  <ol class="list-inside list-decimal space-y-2 my-4 leading-relaxed text-stone-700"><li>Run the Newswire scrape (automated or manual) — new press releases flow through relevance check, AI generation, and dual write</li><li>Editorial and report content is written or assisted manually in section folders</li><li>Optional: generate a weekly roundup or LinkedIn carousel for distribution</li><li>Express serves updated content immediately — no deploy step for article changes beyond file sync</li></ol>
+  <p class="leading-relaxed text-stone-700">Processed wire URLs are tracked to prevent duplicate ingestion. Frontmatter dates drive recency filters (carousel pool, homepage ordering, ticker).</p>
+  <h3 class="text-lg font-medium text-stone-800 mt-6">What this demonstrates</h3>
+  <ul class="list-inside list-disc space-y-2 my-4 leading-relaxed text-stone-700"><li>End-to-end system design from data ingestion through AI processing to multi-channel publishing</li><li>File-based architecture that scales to thousands of articles without a CMS database</li><li>Multi-stage AI pipeline with grounding, guardrails, and structured output</li><li>Content discovery through tags, scoring, and automated internal linking</li><li>Product thinking beyond a blog — mobile app, directories, shop, and marketing automation from shared infrastructure</li></ul>
+  <p class="leading-relaxed text-stone-700">I have deliberately omitted traffic analytics, revenue figures, and partner pricing from this document.</p>
+</section>
+
+<section id="whats-next" class="space-y-4">
+  <h2 class="text-xl font-semibold">What's Next</h2>
+  <p class="leading-relaxed text-stone-700">Honest forward-looking items, not a roadmap promise:</p>
+  <ul class="list-inside list-disc space-y-2 my-4 leading-relaxed text-stone-700"><li><strong>Push notifications</strong> in the Capacitor app (FCM/APNs + backend needed)</li><li><strong>Expanded beverage categories</strong> (cider, NA beer, etc.) — requires config, folder structure, and relevance checker prompt updates</li><li><strong>Multi-provider shop</strong> — architecture supports it; only Wine.com is live</li><li><strong>Hierarchical article URLs</strong> — currently flat slugs; breadcrumb routing is planned</li><li><strong>Static generation layer</strong> — if article volume grows past in-process cache comfort, a hybrid SSR + CDN cache is the natural next step</li></ul>
+  <p class="leading-relaxed text-stone-700"><em>Document generated from the BevWire repository, July 2026. For internal system documentation maintained alongside the codebase, see <code class="text-stone-800">analysis.md</code>.</em></p>
+</section>
+
+      </article>
+    </div>
+  </main>
+</body>
+</html>
