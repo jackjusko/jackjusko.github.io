@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jack Jusko — Bento</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .bento-grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: minmax(120px, auto);
+    }
+    @media (min-width: 1024px) {
+      .bento-grid {
+        grid-template-rows: repeat(6, minmax(100px, 1fr));
+        min-height: calc(100vh - 4rem);
+      }
+      .tile-identity { grid-column: 1 / 3; grid-row: 1 / 3; }
+      .tile-bio { grid-column: 3 / 5; grid-row: 1 / 2; }
+      .tile-story { grid-column: 3 / 4; grid-row: 2 / 3; }
+      .tile-stat { grid-column: 4 / 5; grid-row: 2 / 3; }
+      .tile-links { grid-column: 1 / 2; grid-row: 3 / 4; }
+      .tile-fms { grid-column: 2 / 5; grid-row: 3 / 4; }
+      .tile-bastion { grid-column: 1 / 3; grid-row: 4 / 5; }
+      .tile-eds { grid-column: 3 / 5; grid-row: 4 / 5; }
+      .tile-brewledger { grid-column: 1 / 3; grid-row: 5 / 7; }
+      .tile-bevwire { grid-column: 3 / 5; grid-row: 5 / 6; }
+      .tile-lab1 { grid-column: 3 / 4; grid-row: 6 / 7; }
+      .tile-lab2 { grid-column: 4 / 5; grid-row: 6 / 7; }
+      .tile-creds { grid-column: 1 / 3; grid-row: 7 / 8; }
+      .tile-coursework { grid-column: 1 / 5; grid-row: 8 / 9; }
+    }
+    @media (max-width: 1023px) {
+      .bento-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-neutral-100 font-sans text-stone-900 antialiased">
+  <a href="index.html" class="fixed bottom-4 right-4 z-50 rounded-full bg-stone-900 px-4 py-2 text-sm text-white shadow-lg transition-colors hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400">Compare variants</a>
+
+  <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
+    <div class="bento-grid">
+      <!-- Identity -->
+      <div class="tile-identity rounded-2xl border border-stone-200/80 bg-white p-6 shadow-sm flex flex-col justify-between">
+        <div class="flex items-start gap-4">
+          <img src="../assets/images/JackJusko.jpg" alt="Jack Jusko" class="h-24 w-24 shrink-0 rounded-2xl object-cover shadow-sm sm:h-28 sm:w-28" width="112" height="112">
+          <div>
+            <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">Jack Jusko</h1>
+            <p class="text-sm text-stone-500">John</p>
+            <p class="mt-2 text-sm font-medium text-stone-600">Software, AI &amp; Cybersecurity Engineer</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Professional bio -->
+      <div class="tile-bio rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm">
+        <p id="bio-short" class="text-sm leading-relaxed text-stone-600 line-clamp-3">I have been building full-scale software applications for 14 years. I specialize in systems architecture, cybersecurity, and web development, with a focus on resilient infrastructure and responding to security threats.</p>
+        <p id="bio-full" class="hidden text-sm leading-relaxed text-stone-600">I have been building full-scale software applications for 14 years. I specialize in systems architecture, cybersecurity, and web development, with a focus on resilient infrastructure and responding to security threats. Since starting at age 10, I have worked across diverse technologies to build and secure complex systems.</p>
+        <button type="button" id="bio-toggle" class="mt-2 text-xs font-medium text-stone-500 underline underline-offset-2 hover:text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400 rounded">Read more</button>
+      </div>
+
+      <!-- Personal story -->
+      <div class="tile-story rounded-2xl border border-stone-200/80 bg-gradient-to-br from-amber-50 to-white p-5 shadow-sm">
+        <p class="text-xs font-medium uppercase tracking-wider text-amber-800/70">Beyond the keyboard</p>
+        <p class="mt-2 text-sm leading-relaxed text-stone-700">Skateboard, snowboard, ski. Rebuilt a 1981 Yamaha XJ550 from a 30-year garage sit and rode it cross-country.</p>
+      </div>
+
+      <!-- Stat highlight -->
+      <div class="tile-stat rounded-2xl border border-stone-200/80 bg-stone-900 p-5 shadow-sm text-white flex flex-col justify-center">
+        <p class="text-3xl font-bold tracking-tight">2,000 mi</p>
+        <p class="mt-1 text-xs text-stone-400">Coast-to-coast on a frame-up rebuild</p>
+      </div>
+
+      <!-- Social links -->
+      <div class="tile-links rounded-2xl border border-stone-200/80 bg-white p-4 shadow-sm flex flex-col justify-center gap-2">
+        <a href="https://github.com/jackjusko" target="_blank" rel="noopener noreferrer" class="text-sm text-stone-600 hover:text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-400 rounded">GitHub</a>
+        <a href="https://www.linkedin.com/in/johnjusko/" target="_blank" rel="noopener noreferrer" class="text-sm text-stone-600 hover:text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-400 rounded">LinkedIn</a>
+        <a href="../assets/general-software-engineer-resume.pdf" target="_blank" rel="noopener noreferrer" class="text-sm text-stone-600 hover:text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-400 rounded">Resume</a>
+      </div>
+
+      <!-- FMS - featured role -->
+      <div class="tile-fms rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm">
+        <p class="text-xs font-medium uppercase tracking-wider text-stone-400">Current · Jan 2026 – Present</p>
+        <h2 class="mt-1 font-semibold text-stone-800">Web Development and Cybersecurity Consultant — Foundation Management Services, Inc.</h2>
+        <p class="mt-2 text-sm leading-relaxed text-stone-600 line-clamp-2">Building features and maintaining websites for FMS Cleveland, the Bruening Foundation, and related properties. Advising on security posture and incident response.</p>
+      </div>
+
+      <!-- Bastion -->
+      <div class="tile-bastion rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm">
+        <p class="text-xs font-medium text-stone-400">2023 – 2024</p>
+        <h2 class="mt-1 text-sm font-semibold text-stone-800">Acting CTO &amp; Lead Architect — Bastion LLC</h2>
+        <p class="mt-2 text-xs leading-relaxed text-stone-600 line-clamp-3">P2P fitness marketplace, pre-seed funding, Desai Accelerator finals. AWS, Stripe Connect, Node.js/Vue.js SPA.</p>
+      </div>
+
+      <!-- EDS -->
+      <div class="tile-eds rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm">
+        <p class="text-xs font-medium text-stone-400">2019 – 2020</p>
+        <h2 class="mt-1 text-sm font-semibold text-stone-800">Project Head — Enterprise Data Solutions</h2>
+        <p class="mt-2 text-xs leading-relaxed text-stone-600 line-clamp-3">Led cross-platform mobile marketplace engineering. C# / ASP.NET REST, SQL Server, base64 chunking uploads.</p>
+      </div>
+
+      <!-- BrewLedger -->
+      <a href="../projects/brewledger/index.html" class="tile-brewledger group rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm transition-shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-stone-400">
+        <p class="text-xs font-medium uppercase tracking-wider text-stone-400">Software Project</p>
+        <h2 class="mt-2 text-lg font-semibold text-stone-800 group-hover:text-stone-900">BrewLedger →</h2>
+        <p class="mt-2 text-sm leading-relaxed text-stone-600">Local-first brewery operations platform with mobile and desktop clients, offline sync, append-only inventory ledger, batch tracking, and TTB compliance.</p>
+        <p class="mt-3 text-xs text-stone-500">Vue 3 · Capacitor · Dexie · Express · SQLite · Stripe</p>
+      </a>
+
+      <!-- BevWire -->
+      <a href="../projects/bevwire/index.html" class="tile-bevwire group rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm transition-shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-stone-400">
+        <p class="text-xs font-medium uppercase tracking-wider text-stone-400">Software Project</p>
+        <h2 class="mt-1 font-semibold text-stone-800 group-hover:text-stone-900">BevWire →</h2>
+        <p class="mt-2 text-sm leading-relaxed text-stone-600 line-clamp-3">Markdown-native publishing for beverage industry news plus Newswire AI pipeline.</p>
+      </a>
+
+      <!-- Lab 1 -->
+      <a href="../labs/brute-force-detection-response/index.html" class="tile-lab1 group rounded-2xl border border-stone-200/80 bg-stone-900 p-4 shadow-sm text-white transition-shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-stone-400">
+        <p class="text-xs text-stone-400">Cyber Lab</p>
+        <h2 class="mt-1 text-sm font-medium group-hover:text-stone-100">Brute force detection →</h2>
+      </a>
+
+      <!-- Lab 2 -->
+      <a href="../labs/network-threat-detection-telemetry/index.html" class="tile-lab2 group rounded-2xl border border-stone-200/80 bg-stone-800 p-4 shadow-sm text-white transition-shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-stone-400">
+        <p class="text-xs text-stone-400">Cyber Lab</p>
+        <h2 class="mt-1 text-sm font-medium group-hover:text-stone-100">Network telemetry →</h2>
+      </a>
+
+      <!-- Credentials strip -->
+      <div class="tile-creds rounded-2xl border border-stone-200/80 bg-white p-4 shadow-sm flex flex-wrap items-center gap-4">
+        <img src="../assets/images/badges/MICH.jpg" alt="University of Michigan" class="h-12 w-12 object-contain" width="48" height="48">
+        <div class="text-sm text-stone-700">
+          <span class="font-medium">University of Michigan</span> · B.S.E. CS, 2025 · cum laude
+        </div>
+        <img src="../assets/images/badges/Security+.png" alt="CompTIA Security+" class="h-12 w-12 object-contain" width="48" height="48">
+        <span class="text-sm text-stone-700">Security+</span>
+        <img src="../assets/images/badges/CloudPractitioner.png" alt="AWS Cloud Practitioner" class="h-12 w-12 object-contain" width="48" height="48">
+        <span class="text-sm text-stone-700">AWS Cloud Practitioner</span>
+      </div>
+
+      <!-- Coursework compact grid -->
+      <div class="tile-coursework rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm">
+        <h2 class="mb-4 text-xs font-medium uppercase tracking-wider text-stone-400">Relevant Coursework</h2>
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <article class="rounded-xl bg-neutral-50 p-3">
+            <h3 class="text-sm font-medium text-stone-800">EECS 388 — Computer Security</h3>
+            <ul class="mt-2 space-y-1 text-xs text-stone-600">
+              <li>Web app security: SQLi, XSS, CSRF, TLS/PKI</li>
+              <li>Binary exploitation &amp; reverse engineering</li>
+            </ul>
+            <details class="mt-2">
+              <summary class="cursor-pointer text-xs text-stone-500 hover:text-stone-800">Show all</summary>
+              <ul class="mt-2 space-y-1 text-xs text-stone-600">
+                <li>Network security &amp; defense: firewalls, IDS, VPN, zero-trust</li>
+                <li>Applied cryptography: AES, RSA, authenticated encryption</li>
+                <li>Hands-on projects in cryptography, web security, networking</li>
+              </ul>
+            </details>
+          </article>
+          <article class="rounded-xl bg-neutral-50 p-3">
+            <h3 class="text-sm font-medium text-stone-800"><a href="https://eecs376.org/" target="_blank" rel="noopener noreferrer" class="hover:underline">EECS 376 — Foundations of CS</a></h3>
+            <ul class="mt-2 space-y-1 text-xs text-stone-600">
+              <li>Cryptography: Diffie-Hellman, RSA, digital signatures</li>
+              <li>Algorithm design: DP, greedy, divide-and-conquer</li>
+            </ul>
+            <details class="mt-2">
+              <summary class="cursor-pointer text-xs text-stone-500 hover:text-stone-800">Show all</summary>
+              <ul class="mt-2 space-y-1 text-xs text-stone-600">
+                <li>Computational hardness &amp; complexity (P vs NP)</li>
+                <li>Randomized algorithms and probabilistic analysis</li>
+              </ul>
+            </details>
+          </article>
+          <article class="rounded-xl bg-neutral-50 p-3">
+            <h3 class="text-sm font-medium text-stone-800">EECS 445 — Machine Learning</h3>
+            <ul class="mt-2 space-y-1 text-xs text-stone-600">
+              <li>Supervised learning: regression, classification, neural nets</li>
+              <li>Unsupervised learning: clustering, dimensionality reduction</li>
+            </ul>
+            <details class="mt-2">
+              <summary class="cursor-pointer text-xs text-stone-500 hover:text-stone-800">Show all</summary>
+              <ul class="mt-2 space-y-1 text-xs text-stone-600">
+                <li>Theory and implementation of state-of-the-art ML algorithms</li>
+              </ul>
+            </details>
+          </article>
+          <article class="rounded-xl bg-neutral-50 p-3">
+            <h3 class="text-sm font-medium text-stone-800">EECS 470 — Computer Architecture</h3>
+            <ul class="mt-2 space-y-1 text-xs text-stone-600">
+              <li>Processors, memory hierarchies, I/O design</li>
+              <li>Speculation, branch prediction, cache design</li>
+            </ul>
+            <details class="mt-2">
+              <summary class="cursor-pointer text-xs text-stone-500 hover:text-stone-800">Show all</summary>
+              <ul class="mt-2 space-y-1 text-xs text-stone-600">
+                <li>Hardware/software trade-offs for efficient execution</li>
+                <li>Hands-on processor component design using an HDL</li>
+              </ul>
+            </details>
+          </article>
+          <article class="rounded-xl bg-neutral-50 p-3">
+            <h3 class="text-sm font-medium text-stone-800">EECS 481 — Software Engineering</h3>
+            <ul class="mt-2 space-y-1 text-xs text-stone-600">
+              <li>Large, complex software systems development</li>
+              <li>Production engineering practices</li>
+            </ul>
+            <details class="mt-2">
+              <summary class="cursor-pointer text-xs text-stone-500 hover:text-stone-800">Show all</summary>
+              <ul class="mt-2 space-y-1 text-xs text-stone-600">
+                <li>Structuring principles, design methodologies, informal analysis</li>
+                <li>Term project developing a full software system</li>
+              </ul>
+            </details>
+          </article>
+          <article class="rounded-xl bg-neutral-50 p-3">
+            <h3 class="text-sm font-medium text-stone-800">EECS 486 — IR &amp; Web Search</h3>
+            <ul class="mt-2 space-y-1 text-xs text-stone-600">
+              <li>Indexing, querying, retrieval models/algorithms</li>
+              <li>Web search: crawling, link analysis</li>
+            </ul>
+            <details class="mt-2">
+              <summary class="cursor-pointer text-xs text-stone-500 hover:text-stone-800">Show all</summary>
+              <ul class="mt-2 space-y-1 text-xs text-stone-600">
+                <li>IR across text, image/video, audio, geospatial data</li>
+                <li>Social media and crowdsourcing in modern search</li>
+              </ul>
+            </details>
+          </article>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('bio-toggle').addEventListener('click', function () {
+      const short = document.getElementById('bio-short');
+      const full = document.getElementById('bio-full');
+      const expanded = !full.classList.contains('hidden');
+      short.classList.toggle('hidden', !expanded);
+      full.classList.toggle('hidden', expanded);
+      this.textContent = expanded ? 'Read more' : 'Read less';
+    });
+  </script>
+</body>
+</html>

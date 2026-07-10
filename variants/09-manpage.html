@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jack Jusko — Man Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+    .sidebar-link.active { border-left-color: rgb(79 70 229); color: rgb(49 46 129); font-weight: 600; }
+    .section-rule-about { border-left-color: rgb(99 102 241); }
+    .section-rule-experience { border-left-color: rgb(100 116 139); }
+    .section-rule-build { border-left-color: rgb(59 130 246); }
+    .section-rule-secure { border-left-color: rgb(245 158 11); }
+    .section-rule-background { border-left-color: rgb(20 184 166); }
+  </style>
+</head>
+<body class="min-h-screen bg-stone-50 font-sans text-stone-900 antialiased">
+  <a href="index.html" class="fixed bottom-4 right-4 z-50 rounded-full bg-stone-900 px-4 py-2 text-sm text-white shadow-lg hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400">Compare variants</a>
+
+  <nav class="fixed top-0 left-0 right-0 z-40 border-b border-stone-200 bg-white/95 backdrop-blur-sm lg:hidden">
+    <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm">
+      <span class="font-mono text-xs font-bold">jack(7)</span>
+      <div class="flex flex-wrap gap-x-3 gap-y-1">
+        <a href="#about" class="nav-link text-stone-600 hover:text-stone-900">About</a>
+        <a href="#experience" class="nav-link text-stone-600 hover:text-stone-900">Experience</a>
+        <a href="#build" class="nav-link text-stone-600 hover:text-stone-900">Build</a>
+        <a href="#secure" class="nav-link text-stone-600 hover:text-stone-900">Secure</a>
+        <a href="#background" class="nav-link text-stone-600 hover:text-stone-900">Background</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="lg:flex pt-14 lg:pt-0">
+    <aside class="lg:sticky lg:top-0 lg:h-screen lg:w-72 lg:shrink-0 border-b lg:border-b-0 lg:border-r border-stone-200 bg-white px-5 py-6">
+      <img src="../assets/images/JackJusko.jpg" alt="Jack Jusko" class="mx-auto h-24 w-24 rounded-lg border border-stone-200 object-cover lg:mx-0" width="96" height="96">
+      <h1 class="mt-4 font-mono text-lg font-bold">Jack Jusko</h1>
+      <p class="font-mono text-xs text-stone-500">John · Software, AI &amp; Cybersecurity Engineer</p>
+      <div class="mt-4 space-y-1 text-sm">
+        <a href="https://github.com/jackjusko" target="_blank" rel="noopener noreferrer" class="block text-stone-600 hover:text-indigo-700">GitHub</a>
+        <a href="https://www.linkedin.com/in/johnjusko/" target="_blank" rel="noopener noreferrer" class="block text-stone-600 hover:text-indigo-700">LinkedIn</a>
+        <a href="../assets/general-software-engineer-resume.pdf" target="_blank" rel="noopener noreferrer" class="block text-stone-600 hover:text-indigo-700">Resume</a>
+      </div>
+      <div class="mt-6 hidden border-t border-stone-200 pt-5 lg:block">
+        <p class="font-mono text-xs font-bold uppercase tracking-wider text-stone-400">Manual sections</p>
+        <nav class="mt-3 space-y-1 text-sm">
+          <a href="#about" class="sidebar-link block border-l-2 border-transparent py-1.5 pl-3 text-stone-600 hover:border-indigo-300 hover:text-indigo-800">JACK-ABOUT(7)</a>
+          <a href="#experience" class="sidebar-link block border-l-2 border-transparent py-1.5 pl-3 text-stone-600 hover:border-indigo-300 hover:text-indigo-800">JACK-EXPERIENCE(7)</a>
+          <a href="#build" class="sidebar-link block border-l-2 border-transparent py-1.5 pl-3 text-stone-600 hover:border-indigo-300 hover:text-indigo-800">JACK-BUILD(7)</a>
+          <a href="#secure" class="sidebar-link block border-l-2 border-transparent py-1.5 pl-3 text-stone-600 hover:border-indigo-300 hover:text-indigo-800">JACK-SECURE(7)</a>
+          <a href="#background" class="sidebar-link block border-l-2 border-transparent py-1.5 pl-3 text-stone-600 hover:border-indigo-300 hover:text-indigo-800">JACK-BACKGROUND(7)</a>
+        </nav>
+      </div>
+      <div class="mt-6 border-t border-stone-200 pt-5">
+        <p class="font-mono text-xs font-bold uppercase tracking-wider text-stone-400">Credentials</p>
+        <div class="mt-3 space-y-3 text-xs text-stone-600">
+          <div class="flex gap-2"><img src="../assets/images/badges/MICH.jpg" alt="" class="h-8 w-8 object-contain" width="32" height="32"><span>UMich B.S.E. CS, 2025</span></div>
+          <div class="flex gap-2"><img src="../assets/images/badges/Security+.png" alt="" class="h-8 w-8 object-contain" width="32" height="32"><span>Security+</span></div>
+          <div class="flex gap-2"><img src="../assets/images/badges/CloudPractitioner.png" alt="" class="h-8 w-8 object-contain" width="32" height="32"><span>AWS Cloud Practitioner</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex-1 min-w-0 px-6 py-10 lg:py-12">
+      <section id="about" class="section-rule-about mb-16 border-l-4 pl-6">
+        <h2 class="font-mono text-xl font-bold">JACK-ABOUT(7)</h2>
+        <p class="mt-1 font-mono text-xs text-stone-500">Jack Jusko — professional and personal overview</p>
+        <p class="mt-6 leading-relaxed text-stone-700">I have been building full-scale software applications for 14 years. I specialize in systems architecture, cybersecurity, and web development, with a focus on resilient infrastructure and responding to security threats. Since starting at age 10, I have worked across diverse technologies to build and secure complex systems.</p>
+        <p class="mt-4 leading-relaxed text-stone-700">I skateboard, snowboard, and ski. A few years ago, I pulled a 1981 Yamaha XJ550 out of a garage where it had sat for 30 years. It was missing parts and wouldn't start. I rebuilt it from the frame up, fabricating parts when I couldn't find them. It was a hack-and-slash job, but it worked. I rode it 2,000 miles across the country. When I'm not outdoors or in the garage, I run a home lab on a mini PC to host my own media servers and network shares.</p>
+      </section>
+
+      <section id="experience" class="section-rule-experience mb-16 border-l-4 pl-6">
+        <h2 class="font-mono text-xl font-bold">JACK-EXPERIENCE(7)</h2>
+        <p class="mt-1 font-mono text-xs text-stone-500">Work history</p>
+        <article class="mt-8 space-y-2">
+          <h3 class="font-bold">Web Development and Cybersecurity Consultant</h3>
+          <p class="font-mono text-xs text-stone-500">Foundation Management Services, Inc. -- Jan 2026 - Present</p>
+          <p class="leading-relaxed text-stone-700">I serve as web developer and cybersecurity consultant for Foundation Management Services and affiliated organizations, building new features and maintaining websites for FMS Cleveland, the Bruening Foundation, and related properties. I advise on security posture and incident response, and use Cursor rules/skills and OpenRouter CLI agents to accelerate feature delivery and verification.</p>
+        </article>
+        <p class="my-6 font-mono text-center text-stone-300">--</p>
+        <article class="space-y-2">
+          <h3 class="font-bold">Acting CTO &amp; Lead Architect</h3>
+          <p class="font-mono text-xs text-stone-500">Bastion LLC -- 2023 - 2024</p>
+          <p class="leading-relaxed text-stone-700">Hired as Acting CTO &amp; Lead Architect at an existing fitness marketplace startup, I architected a P2P platform that secured pre-seed funding and reached the finals of the Ann Arbor Desai Accelerator. I managed the technical roadmap and a team of software interns, designed scalable AWS infrastructure (EC2/RDS), built custom Stripe Connect logic for split payments and tax compliance, and shipped a Node.js/Vue.js SPA with real-time WebSocket chat and coach-matching algorithms.</p>
+          <p class="text-sm text-stone-500">Technologies: Node.js, Vue.js, AWS, MySQL, Stripe Connect, WebSockets</p>
+        </article>
+        <p class="my-6 font-mono text-center text-stone-300">--</p>
+        <article class="space-y-2">
+          <h3 class="font-bold">Project Head</h3>
+          <p class="font-mono text-xs text-stone-500">Enterprise Data Solutions -- 2019 - 2020</p>
+          <p class="leading-relaxed text-stone-700">Promoted from Junior Developer to lead engineering of a cross-platform mobile marketplace for educational classes. I participated in the full Agile SDLC on a collaborative engineering team, architected C# / ASP.NET REST endpoints and SQL Server data access, and built base64 chunking upload logic for reliable large media transfers over unstable mobile networks.</p>
+          <p class="text-sm text-stone-500">Technologies: C#, ASP.NET, SQL Server</p>
+        </article>
+      </section>
+
+      <section id="build" class="section-rule-build mb-16 border-l-4 pl-6">
+        <h2 class="font-mono text-xl font-bold">JACK-BUILD(7)</h2>
+        <p class="mt-1 font-mono text-xs text-stone-500">Software projects</p>
+        <a href="../projects/brewledger/index.html" class="mt-8 block focus:outline-none focus:ring-2 focus:ring-indigo-400 rounded"><h3 class="font-bold hover:underline">BrewLedger</h3><p class="mt-3 leading-relaxed text-stone-700">I built a local-first brewery operations platform with mobile and desktop clients, offline sync, an append-only inventory ledger, batch tracking, and TTB compliance — one API, deliberate conflict resolution, and an intentional split between floor and office workflows.</p><p class="mt-2 text-sm text-stone-500">Technologies: Vue 3, Capacitor, Dexie, Express, SQLite, Stripe</p></a>
+        <p class="my-6 font-mono text-center text-stone-300">--</p>
+        <a href="../projects/bevwire/index.html" class="block focus:outline-none focus:ring-2 focus:ring-indigo-400 rounded"><h3 class="font-bold hover:underline">BevWire</h3><p class="mt-3 leading-relaxed text-stone-700">I built a markdown-native publishing platform for beverage industry news — file-based CMS, no editorial database, plus Newswire, an AI pipeline that scrapes press wires, filters for relevance, and publishes industry-press analysis within minutes.</p><p class="mt-2 text-sm text-stone-500">Technologies: Node.js, Express, Playwright, OpenAI, Tailwind, Capacitor</p></a>
+      </section>
+
+      <section id="secure" class="section-rule-secure mb-16 border-l-4 pl-6">
+        <h2 class="font-mono text-xl font-bold">JACK-SECURE(7)</h2>
+        <p class="mt-1 font-mono text-xs text-stone-500">Cybersecurity labs</p>
+        <a href="../labs/brute-force-detection-response/index.html" class="mt-8 block focus:outline-none focus:ring-2 focus:ring-indigo-400 rounded"><h3 class="font-bold hover:underline">Simulated brute force detection and response</h3><p class="mt-3 leading-relaxed text-stone-700">I deployed a Wazuh agent on an Ubuntu droplet to monitor for security events. During a simulated SSH brute-force attack using Hydra, I detected authentication failure spikes, identified the attacker's source IP, and wrote custom Wazuh rules to trigger an active response firewall drop. After debugging an initial misconfiguration, I successfully secured the system.</p><p class="mt-2 text-sm text-stone-500">Technologies: Wazuh, Ubuntu 24.04, Kali Linux, Hydra, Nmap, DigitalOcean, VMware</p></a>
+        <p class="my-6 font-mono text-center text-stone-300">--</p>
+        <a href="../labs/network-threat-detection-telemetry/index.html" class="block focus:outline-none focus:ring-2 focus:ring-indigo-400 rounded"><h3 class="font-bold hover:underline">Advanced network threat detection and telemetry analysis</h3><p class="mt-3 leading-relaxed text-stone-700">I deployed Suricata on a dual-homed VMware sensor to capture network traffic in promiscuous mode, piped eve.json alerts into my existing Wazuh SIEM, and triaged Nmap stealth scans and Gobuster directory enumeration against an Apache victim. When the Wazuh agent event queue saturated under Gobuster flood volume, I tuned buffer settings and disabled the client buffer to prevent event drops.</p><p class="mt-2 text-sm text-stone-500">Technologies: Suricata, Wazuh, Ubuntu 24.04, Kali Linux, Apache, Nmap, Gobuster, VMware</p></a>
+      </section>
+
+      <section id="background" class="section-rule-background border-l-4 pl-6 pb-16">
+        <h2 class="font-mono text-xl font-bold">JACK-BACKGROUND(7)</h2>
+        <p class="mt-1 font-mono text-xs text-stone-500">Relevant coursework</p>
+        <p class="mt-6 font-mono text-xs font-bold text-stone-500">SYNOPSIS</p>
+        <p class="mt-2 text-sm text-stone-600">University of Michigan computer science coursework covering security, theory, ML, architecture, software engineering, and information retrieval.</p>
+        <p class="mt-6 font-mono text-xs font-bold text-stone-500">SEE ALSO</p>
+        <div class="mt-4 overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead><tr class="border-b border-stone-300"><th class="py-2 pr-4 font-mono text-xs">Course</th><th class="py-2 font-mono text-xs">Topics</th></tr></thead>
+            <tbody class="divide-y divide-stone-200 text-stone-700">
+              <tr><td class="py-3 pr-4 align-top whitespace-nowrap font-mono text-xs">EECS 388</td><td class="py-3">Web security · Network defense · Cryptography · Binary exploitation &amp; Ghidra</td></tr>
+              <tr><td class="py-3 pr-4 align-top whitespace-nowrap font-mono text-xs"><a href="https://eecs376.org/" target="_blank" rel="noopener noreferrer" class="underline hover:text-indigo-800">EECS 376</a></td><td class="py-3">Diffie-Hellman, RSA · P vs NP · Algorithm design · Randomized algorithms</td></tr>
+              <tr><td class="py-3 pr-4 align-top whitespace-nowrap font-mono text-xs">EECS 445</td><td class="py-3">Supervised &amp; unsupervised learning · Neural nets · Large-scale ML</td></tr>
+              <tr><td class="py-3 pr-4 align-top whitespace-nowrap font-mono text-xs">EECS 470</td><td class="py-3">Processor &amp; memory hierarchy · Speculation, caches · HDL design</td></tr>
+              <tr><td class="py-3 pr-4 align-top whitespace-nowrap font-mono text-xs">EECS 481</td><td class="py-3">Large software systems · Production engineering · Term project</td></tr>
+              <tr><td class="py-3 pr-4 align-top whitespace-nowrap font-mono text-xs">EECS 486</td><td class="py-3">IR &amp; indexing · Web search · Multimodal IR</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var sections = document.querySelectorAll('section[id]');
+      var links = document.querySelectorAll('.sidebar-link, .nav-link');
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var id = entry.target.id;
+            links.forEach(function (link) {
+              link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+            });
+          }
+        });
+      }, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+      sections.forEach(function (s) { observer.observe(s); });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jack Jusko — Timeline</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-50 font-sans text-stone-900 antialiased">
+  <a href="index.html" class="fixed bottom-4 right-4 z-50 rounded-full bg-indigo-600 px-4 py-2 text-sm text-white shadow-lg transition-colors hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400">Compare variants</a>
+
+  <div class="lg:flex">
+    <!-- Sticky sidebar -->
+    <aside class="lg:sticky lg:top-0 lg:h-screen lg:w-[30%] lg:shrink-0 lg:overflow-y-auto border-b lg:border-b-0 lg:border-r border-stone-200 bg-white px-6 py-8">
+      <img src="../assets/images/JackJusko.jpg" alt="Jack Jusko" class="mx-auto aspect-square w-32 rounded-xl border border-stone-200 shadow-sm lg:mx-0" width="128" height="128">
+      <div class="mt-4 text-center lg:text-left">
+        <h1 class="text-2xl font-semibold tracking-tight">Jack Jusko</h1>
+        <p class="text-sm text-stone-500">John</p>
+        <p class="mt-2 text-sm font-medium text-indigo-700">Software, AI &amp; Cybersecurity Engineer</p>
+      </div>
+
+      <div class="mt-5 flex flex-wrap justify-center gap-2 lg:justify-start">
+        <a href="https://github.com/jackjusko" target="_blank" rel="noopener noreferrer" class="rounded-lg px-3 py-1.5 text-sm text-stone-600 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-indigo-400">GitHub</a>
+        <a href="https://www.linkedin.com/in/johnjusko/" target="_blank" rel="noopener noreferrer" class="rounded-lg px-3 py-1.5 text-sm text-stone-600 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-indigo-400">LinkedIn</a>
+        <a href="../assets/general-software-engineer-resume.pdf" target="_blank" rel="noopener noreferrer" class="rounded-lg px-3 py-1.5 text-sm text-stone-600 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-indigo-400">Resume</a>
+      </div>
+
+      <div class="mt-8 space-y-5 border-t border-stone-200 pt-6">
+        <div>
+          <h2 class="mb-2 text-xs font-medium uppercase tracking-wider text-stone-400">Education</h2>
+          <div class="flex items-start gap-3">
+            <img src="../assets/images/badges/MICH.jpg" alt="University of Michigan" class="h-14 w-14 shrink-0 object-contain" width="56" height="56">
+            <p class="text-sm text-stone-700">
+              University of Michigan<br>
+              B.S.E. in Computer Science, 2025<br>
+              Graduated with honors (cum laude)
+            </p>
+          </div>
+        </div>
+        <div>
+          <h2 class="mb-2 text-xs font-medium uppercase tracking-wider text-stone-400">Certifications</h2>
+          <ul class="space-y-2">
+            <li class="flex items-center gap-3">
+              <img src="../assets/images/badges/Security+.png" alt="CompTIA Security+" class="h-14 w-14 object-contain" width="56" height="56">
+              <span class="text-sm text-stone-700">CompTIA Security+</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <img src="../assets/images/badges/CloudPractitioner.png" alt="AWS Cloud Practitioner" class="h-14 w-14 object-contain" width="56" height="56">
+              <span class="text-sm text-stone-700">AWS Certified Cloud Practitioner</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Timeline main column -->
+    <main class="flex-1 px-6 py-8 lg:px-12">
+      <div class="relative max-w-2xl space-y-12">
+        <div class="absolute left-3 top-2 bottom-2 w-0.5 bg-indigo-200 hidden sm:block" aria-hidden="true"></div>
+
+        <!-- About -->
+        <section class="relative sm:pl-10">
+          <div class="absolute left-0 top-1 hidden h-6 w-6 rounded-full border-2 border-indigo-600 bg-white sm:block" aria-hidden="true"></div>
+          <p class="text-xs font-medium uppercase tracking-wider text-indigo-600">About</p>
+          <div class="mt-3 space-y-4 text-sm leading-relaxed text-stone-600">
+            <p>I have been building full-scale software applications for 14 years. I specialize in systems architecture, cybersecurity, and web development, with a focus on resilient infrastructure and responding to security threats. Since starting at age 10, I have worked across diverse technologies to build and secure complex systems.</p>
+            <p>I skateboard, snowboard, and ski. A few years ago, I pulled a 1981 Yamaha XJ550 out of a garage where it had sat for 30 years. It was missing parts and wouldn't start. I rebuilt it from the frame up, fabricating parts when I couldn't find them. It was a hack-and-slash job, but it worked. I rode it 2,000 miles across the country. When I'm not outdoors or in the garage, I run a home lab on a mini PC to host my own media servers and network shares.</p>
+          </div>
+        </section>
+
+        <!-- Work -->
+        <section class="relative sm:pl-10">
+          <div class="absolute left-0 top-1 hidden h-6 w-6 rounded-full border-2 border-indigo-600 bg-white sm:block" aria-hidden="true"></div>
+          <p class="text-xs font-medium uppercase tracking-wider text-indigo-600">Work Experience</p>
+          <ul class="mt-4 space-y-6">
+            <li class="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+              <p class="text-xs font-medium text-indigo-600">2026 – Present</p>
+              <h3 class="mt-1 font-medium text-stone-800">Web Development and Cybersecurity Consultant — Foundation Management Services, Inc.</h3>
+              <p class="mt-2 text-sm leading-relaxed text-stone-600">I serve as web developer and cybersecurity consultant for Foundation Management Services and affiliated organizations, building new features and maintaining websites for FMS Cleveland, the Bruening Foundation, and related properties. I advise on security posture and incident response, and use Cursor rules/skills and OpenRouter CLI agents to accelerate feature delivery and verification.</p>
+              <p class="mt-2 text-xs text-stone-500">Cleveland, Ohio</p>
+            </li>
+            <li class="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+              <p class="text-xs font-medium text-indigo-600">2023 – 2024</p>
+              <h3 class="mt-1 font-medium text-stone-800">Acting CTO &amp; Lead Architect — Bastion LLC</h3>
+              <p class="mt-2 text-sm leading-relaxed text-stone-600">Hired as Acting CTO &amp; Lead Architect at an existing fitness marketplace startup, I architected a P2P platform that secured pre-seed funding and reached the finals of the Ann Arbor Desai Accelerator. I managed the technical roadmap and a team of software interns, designed scalable AWS infrastructure (EC2/RDS), built custom Stripe Connect logic for split payments and tax compliance, and shipped a Node.js/Vue.js SPA with real-time WebSocket chat and coach-matching algorithms.</p>
+              <p class="mt-2 text-xs text-stone-500">Remote · Node.js, Vue.js, AWS, MySQL, Stripe Connect, WebSockets</p>
+            </li>
+            <li class="rounded-lg border border-stone-200 bg-white p-4 shadow-sm">
+              <p class="text-xs font-medium text-indigo-600">2019 – 2020</p>
+              <h3 class="mt-1 font-medium text-stone-800">Project Head — Enterprise Data Solutions</h3>
+              <p class="mt-2 text-sm leading-relaxed text-stone-600">Promoted from Junior Developer to lead engineering of a cross-platform mobile marketplace for educational classes. I participated in the full Agile SDLC on a collaborative engineering team, architected C# / ASP.NET REST endpoints and SQL Server data access, and built base64 chunking upload logic for reliable large media transfers over unstable mobile networks.</p>
+              <p class="mt-2 text-xs text-stone-500">Cleveland, Ohio · C#, ASP.NET, SQL Server</p>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Projects -->
+        <section class="relative sm:pl-10">
+          <div class="absolute left-0 top-1 hidden h-6 w-6 rounded-full border-2 border-indigo-600 bg-white sm:block" aria-hidden="true"></div>
+          <p class="text-xs font-medium uppercase tracking-wider text-indigo-600">Software Projects</p>
+          <ul class="mt-4 space-y-3">
+            <li>
+              <a href="../projects/brewledger/index.html" class="group block rounded-lg border border-stone-200 bg-white p-4 shadow-sm transition-colors hover:border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <h3 class="font-medium text-stone-800 group-hover:text-indigo-700">BrewLedger →</h3>
+                <p class="mt-2 text-sm leading-relaxed text-stone-600">I built a local-first brewery operations platform with mobile and desktop clients, offline sync, an append-only inventory ledger, batch tracking, and TTB compliance — one API, deliberate conflict resolution, and an intentional split between floor and office workflows.</p>
+                <p class="mt-2 text-xs text-stone-500">Technologies: Vue 3, Capacitor, Dexie, Express, SQLite, Stripe</p>
+              </a>
+            </li>
+            <li>
+              <a href="../projects/bevwire/index.html" class="group block rounded-lg border border-stone-200 bg-white p-4 shadow-sm transition-colors hover:border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <h3 class="font-medium text-stone-800 group-hover:text-indigo-700">BevWire →</h3>
+                <p class="mt-2 text-sm leading-relaxed text-stone-600">I built a markdown-native publishing platform for beverage industry news — file-based CMS, no editorial database, plus Newswire, an AI pipeline that scrapes press wires, filters for relevance, and publishes industry-press analysis within minutes.</p>
+                <p class="mt-2 text-xs text-stone-500">Technologies: Node.js, Express, Playwright, OpenAI, Tailwind, Capacitor</p>
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Labs -->
+        <section class="relative sm:pl-10">
+          <div class="absolute left-0 top-1 hidden h-6 w-6 rounded-full border-2 border-indigo-600 bg-white sm:block" aria-hidden="true"></div>
+          <p class="text-xs font-medium uppercase tracking-wider text-indigo-600">Cybersecurity Labs</p>
+          <ul class="mt-4 space-y-3">
+            <li>
+              <a href="../labs/brute-force-detection-response/index.html" class="group block rounded-lg border border-stone-200 bg-white p-4 shadow-sm transition-colors hover:border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <h3 class="font-medium text-stone-800 group-hover:text-indigo-700">Simulated brute force detection and response →</h3>
+                <p class="mt-2 text-sm leading-relaxed text-stone-600">I deployed a Wazuh agent on an Ubuntu droplet to monitor for security events. During a simulated SSH brute-force attack using Hydra, I detected authentication failure spikes, identified the attacker's source IP, and wrote custom Wazuh rules to trigger an active response firewall drop. After debugging an initial misconfiguration, I successfully secured the system.</p>
+                <p class="mt-2 text-xs text-stone-500">Technologies: Wazuh, Ubuntu 24.04, Kali Linux, Hydra, Nmap, DigitalOcean, VMware</p>
+              </a>
+            </li>
+            <li>
+              <a href="../labs/network-threat-detection-telemetry/index.html" class="group block rounded-lg border border-stone-200 bg-white p-4 shadow-sm transition-colors hover:border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <h3 class="font-medium text-stone-800 group-hover:text-indigo-700">Advanced network threat detection and telemetry analysis →</h3>
+                <p class="mt-2 text-sm leading-relaxed text-stone-600">I deployed Suricata on a dual-homed VMware sensor to capture network traffic in promiscuous mode, piped eve.json alerts into my existing Wazuh SIEM, and triaged Nmap stealth scans and Gobuster directory enumeration against an Apache victim. When the Wazuh agent event queue saturated under Gobuster flood volume, I tuned buffer settings and disabled the client buffer to prevent event drops.</p>
+                <p class="mt-2 text-xs text-stone-500">Technologies: Suricata, Wazuh, Ubuntu 24.04, Kali Linux, Apache, Nmap, Gobuster, VMware</p>
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Coursework tabs -->
+        <section class="relative sm:pl-10 pb-12">
+          <div class="absolute left-0 top-1 hidden h-6 w-6 rounded-full border-2 border-indigo-600 bg-white sm:block" aria-hidden="true"></div>
+          <p class="text-xs font-medium uppercase tracking-wider text-indigo-600">Relevant Coursework</p>
+
+          <div class="mt-4 rounded-lg border border-stone-200 bg-white shadow-sm" role="tablist" aria-label="Coursework">
+            <div class="flex flex-wrap gap-1 border-b border-stone-200 p-2">
+              <button type="button" role="tab" aria-selected="true" aria-controls="course-388" id="tab-388" data-tab="388" class="course-tab rounded-md px-3 py-1.5 text-xs font-medium bg-indigo-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-400">388</button>
+              <button type="button" role="tab" aria-selected="false" aria-controls="course-376" id="tab-376" data-tab="376" class="course-tab rounded-md px-3 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-indigo-400">376</button>
+              <button type="button" role="tab" aria-selected="false" aria-controls="course-445" id="tab-445" data-tab="445" class="course-tab rounded-md px-3 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-indigo-400">445</button>
+              <button type="button" role="tab" aria-selected="false" aria-controls="course-470" id="tab-470" data-tab="470" class="course-tab rounded-md px-3 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-indigo-400">470</button>
+              <button type="button" role="tab" aria-selected="false" aria-controls="course-481" id="tab-481" data-tab="481" class="course-tab rounded-md px-3 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-indigo-400">481</button>
+              <button type="button" role="tab" aria-selected="false" aria-controls="course-486" id="tab-486" data-tab="486" class="course-tab rounded-md px-3 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-indigo-400">486</button>
+            </div>
+
+            <div id="course-388" role="tabpanel" aria-labelledby="tab-388" class="course-panel p-4">
+              <h3 class="font-medium text-stone-800">EECS 388 — Computer Security</h3>
+              <ul class="mt-3 list-inside list-disc space-y-2 text-sm text-stone-600">
+                <li>Web application security: SQL injection, XSS, CSRF, TLS/PKI</li>
+                <li>Network security &amp; defense: protocol attacks, firewalls, IDS, VPN, zero-trust</li>
+                <li>Applied cryptography: AES, RSA, authenticated encryption, cryptanalysis</li>
+                <li>Binary exploitation &amp; reverse engineering: buffer overflows, ROP, Ghidra</li>
+                <li>Hands-on projects in cryptography, web security, networking, and application security</li>
+              </ul>
+            </div>
+            <div id="course-376" role="tabpanel" aria-labelledby="tab-376" class="course-panel hidden p-4">
+              <h3 class="font-medium text-stone-800"><a href="https://eecs376.org/" target="_blank" rel="noopener noreferrer" class="text-indigo-700 hover:underline">EECS 376 — Foundations of Computer Science</a></h3>
+              <ul class="mt-3 list-inside list-disc space-y-2 text-sm text-stone-600">
+                <li>Cryptography: Diffie-Hellman key exchange, RSA encryption &amp; digital signatures</li>
+                <li>Computational hardness &amp; complexity (P vs NP) applied to cryptographic security</li>
+                <li>Algorithm design &amp; analysis: divide-and-conquer, dynamic programming, greedy methods</li>
+                <li>Randomized algorithms and probabilistic analysis</li>
+              </ul>
+            </div>
+            <div id="course-445" role="tabpanel" aria-labelledby="tab-445" class="course-panel hidden p-4">
+              <h3 class="font-medium text-stone-800">EECS 445 — Introduction to Machine Learning</h3>
+              <ul class="mt-3 list-inside list-disc space-y-2 text-sm text-stone-600">
+                <li>Supervised learning: regression, classification, kernel methods, neural networks, and regularization</li>
+                <li>Unsupervised learning: clustering, density estimation, and dimensionality reduction</li>
+                <li>Theory and implementation of state-of-the-art ML algorithms for large-scale real-world applications</li>
+              </ul>
+            </div>
+            <div id="course-470" role="tabpanel" aria-labelledby="tab-470" class="course-panel hidden p-4">
+              <h3 class="font-medium text-stone-800">EECS 470 — Computer Architecture</h3>
+              <ul class="mt-3 list-inside list-disc space-y-2 text-sm text-stone-600">
+                <li>Design and organization of processors, memory hierarchies, peripherals, and I/O</li>
+                <li>Performance techniques: instruction sets, speculation, parallel execution, branch prediction, virtual memory, cache design, and multiprocessing</li>
+                <li>Hardware/software trade-offs for efficient task execution</li>
+                <li>Hands-on processor component design using an HDL</li>
+              </ul>
+            </div>
+            <div id="course-481" role="tabpanel" aria-labelledby="tab-481" class="course-panel hidden p-4">
+              <h3 class="font-medium text-stone-800">EECS 481 — Software Engineering</h3>
+              <ul class="mt-3 list-inside list-disc space-y-2 text-sm text-stone-600">
+                <li>Pragmatic software production: structuring principles, design methodologies, and informal analysis</li>
+                <li>Development of large, complex software systems</li>
+                <li>Real-world engineering practices for building and delivering production software</li>
+                <li>Term project developing a full software system</li>
+              </ul>
+            </div>
+            <div id="course-486" role="tabpanel" aria-labelledby="tab-486" class="course-panel hidden p-4">
+              <h3 class="font-medium text-stone-800">EECS 486 — Information Retrieval and Web Search</h3>
+              <ul class="mt-3 list-inside list-disc space-y-2 text-sm text-stone-600">
+                <li>Information retrieval: indexing, processing, querying, classification, and retrieval models/algorithms</li>
+                <li>IR system implementation across text, image/video, audio, and geospatial data</li>
+                <li>Web search: crawling, link analysis, and search engine development</li>
+                <li>Social media and crowdsourcing in modern search systems</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.querySelectorAll('.course-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        const id = this.dataset.tab;
+        document.querySelectorAll('.course-tab').forEach(function (t) {
+          const active = t.dataset.tab === id;
+          t.setAttribute('aria-selected', active);
+          t.classList.toggle('bg-indigo-600', active);
+          t.classList.toggle('text-white', active);
+          t.classList.toggle('text-stone-600', !active);
+          t.classList.toggle('hover:bg-stone-100', !active);
+        });
+        document.querySelectorAll('.course-panel').forEach(function (panel) {
+          panel.classList.toggle('hidden', panel.id !== 'course-' + id);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

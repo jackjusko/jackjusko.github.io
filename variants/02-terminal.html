@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>jack@portfolio ~</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .cursor-blink { animation: blink 1s step-end infinite; }
+    }
+    .terminal-border { border-color: #1e3a2f; }
+    .terminal-glow { box-shadow: 0 0 0 1px #1e3a2f, 0 0 24px rgba(16, 185, 129, 0.08); }
+  </style>
+</head>
+<body class="min-h-screen bg-zinc-950 text-zinc-300 antialiased">
+  <a href="index.html" class="fixed bottom-4 right-4 z-50 rounded border border-emerald-800 bg-zinc-900 px-4 py-2 font-mono text-xs text-emerald-400 shadow-lg transition-colors hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">[ compare ]</a>
+
+  <!-- Status bar -->
+  <header class="sticky top-0 z-40 border-b terminal-border bg-zinc-950/95 backdrop-blur-sm">
+    <div class="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-4 py-3 font-mono text-sm">
+      <p class="text-emerald-400">
+        <span class="text-zinc-500">jack@portfolio</span>:<span class="text-cyan-400">~</span>$
+        <span class="text-zinc-400">whoami</span>
+        <span class="cursor-blink ml-0.5 inline-block h-4 w-2 bg-emerald-400 align-middle" aria-hidden="true"></span>
+      </p>
+      <nav class="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+        <a href="#about" class="text-zinc-500 hover:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded"># about</a>
+        <a href="#experience" class="text-zinc-500 hover:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded"># experience</a>
+        <a href="#projects" class="text-zinc-500 hover:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded"># projects</a>
+        <a href="#labs" class="text-zinc-500 hover:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded"># labs</a>
+        <a href="#creds" class="text-zinc-500 hover:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded"># creds</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-5xl px-4 py-8">
+    <!-- About -->
+    <section id="about" class="mb-10">
+      <p class="font-mono text-xs text-emerald-600">// OUTPUT</p>
+      <div class="mt-4 flex flex-col gap-6 sm:flex-row sm:items-start">
+        <div class="shrink-0 rounded border-2 border-emerald-800/60 p-1 terminal-glow">
+          <img src="../assets/images/JackJusko.jpg" alt="Jack Jusko" class="h-28 w-28 object-cover grayscale-[20%]" width="112" height="112">
+        </div>
+        <div class="flex-1">
+          <h1 class="font-mono text-2xl font-semibold text-emerald-400">Jack Jusko</h1>
+          <p class="font-mono text-sm text-zinc-500">alias: John</p>
+          <p class="mt-2 text-zinc-400">Software, AI &amp; Cybersecurity Engineer</p>
+          <div class="mt-4 flex flex-wrap gap-3 font-mono text-xs">
+            <a href="https://github.com/jackjusko" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">gh:jackjusko</a>
+            <a href="https://www.linkedin.com/in/johnjusko/" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">li:johnjusko</a>
+            <a href="../assets/general-software-engineer-resume.pdf" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">./resume.pdf</a>
+          </div>
+          <p class="mt-4 text-sm leading-relaxed text-zinc-400">
+            I have been building full-scale software applications for 14 years. I specialize in systems architecture, cybersecurity, and web development, with a focus on resilient infrastructure and responding to security threats. Since starting at age 10, I have worked across diverse technologies to build and secure complex systems.
+          </p>
+          <p class="mt-3 text-sm leading-relaxed text-zinc-500">
+            I skateboard, snowboard, and ski. A few years ago, I pulled a 1981 Yamaha XJ550 out of a garage where it had sat for 30 years. It was missing parts and wouldn't start. I rebuilt it from the frame up, fabricating parts when I couldn't find them. It was a hack-and-slash job, but it worked. I rode it 2,000 miles across the country. When I'm not outdoors or in the garage, I run a home lab on a mini PC to host my own media servers and network shares.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience" class="mb-10">
+      <p class="font-mono text-xs text-emerald-600">$ tail -f /var/log/career.log</p>
+      <div class="mt-4 space-y-3">
+        <article class="rounded border terminal-border bg-zinc-900/50 p-4 font-mono text-sm">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 class="text-emerald-400">FMS — Web Dev &amp; Cybersecurity Consultant</h2>
+            <time class="text-xs text-zinc-600">2026-01 → present</time>
+          </div>
+          <p class="mt-2 font-sans text-sm leading-relaxed text-zinc-400">Web developer and cybersecurity consultant for Foundation Management Services and affiliated organizations. Building features for FMS Cleveland, Bruening Foundation. Security posture, incident response. Cursor rules/skills, OpenRouter CLI agents.</p>
+          <p class="mt-2 text-xs text-zinc-600">Cleveland, Ohio</p>
+        </article>
+        <article class="rounded border terminal-border bg-zinc-900/50 p-4 font-mono text-sm">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 class="text-emerald-400">Bastion LLC — Acting CTO &amp; Lead Architect</h2>
+            <time class="text-xs text-zinc-600">2023 → 2024</time>
+          </div>
+          <p class="mt-2 font-sans text-sm leading-relaxed text-zinc-400">P2P fitness marketplace. Pre-seed funding, Desai Accelerator finals. AWS EC2/RDS, Stripe Connect, Node.js/Vue.js SPA, WebSocket chat, coach-matching.</p>
+          <p class="mt-2 text-xs text-zinc-600">Remote · Node.js, Vue.js, AWS, MySQL, Stripe Connect, WebSockets</p>
+        </article>
+        <article class="rounded border terminal-border bg-zinc-900/50 p-4 font-mono text-sm">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h2 class="text-emerald-400">Enterprise Data Solutions — Project Head</h2>
+            <time class="text-xs text-zinc-600">2019 → 2020</time>
+          </div>
+          <p class="mt-2 font-sans text-sm leading-relaxed text-zinc-400">Cross-platform mobile marketplace for educational classes. C# / ASP.NET REST, SQL Server, base64 chunking uploads for unstable mobile networks.</p>
+          <p class="mt-2 text-xs text-zinc-600">Cleveland, Ohio · C#, ASP.NET, SQL Server</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Projects + Labs split -->
+    <div class="mb-10 grid gap-6 lg:grid-cols-2">
+      <section id="projects">
+        <p class="font-mono text-xs text-emerald-600">$ ls ./projects/</p>
+        <ul class="mt-4 space-y-3">
+          <li>
+            <a href="../projects/brewledger/index.html" class="block rounded border terminal-border bg-zinc-900/50 p-4 transition-colors hover:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <h2 class="font-mono text-sm text-cyan-400">brewledger/</h2>
+              <p class="mt-2 font-sans text-sm leading-relaxed text-zinc-400">Local-first brewery ops platform. Mobile + desktop, offline sync, append-only inventory ledger, TTB compliance.</p>
+              <p class="mt-2 font-mono text-xs text-zinc-600">Vue3 · Capacitor · Dexie · Express · SQLite · Stripe</p>
+            </a>
+          </li>
+          <li>
+            <a href="../projects/bevwire/index.html" class="block rounded border terminal-border bg-zinc-900/50 p-4 transition-colors hover:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <h2 class="font-mono text-sm text-cyan-400">bevwire/</h2>
+              <p class="mt-2 font-sans text-sm leading-relaxed text-zinc-400">Markdown-native beverage news CMS + Newswire AI pipeline for press wire analysis.</p>
+              <p class="mt-2 font-mono text-xs text-zinc-600">Node.js · Express · Playwright · OpenAI · Tailwind · Capacitor</p>
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <section id="labs">
+        <p class="font-mono text-xs text-emerald-600">$ ls ./labs/</p>
+        <ul class="mt-4 space-y-3">
+          <li>
+            <a href="../labs/brute-force-detection-response/index.html" class="block rounded border terminal-border bg-zinc-900/50 p-4 transition-colors hover:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <h2 class="font-mono text-sm text-cyan-400">brute-force-detection/</h2>
+              <p class="mt-2 font-sans text-sm leading-relaxed text-zinc-400">Wazuh agent on Ubuntu. Hydra SSH brute-force simulation. Custom active-response firewall drop rules.</p>
+              <p class="mt-2 font-mono text-xs text-zinc-600">Wazuh · Ubuntu 24.04 · Kali · Hydra · Nmap · DigitalOcean · VMware</p>
+            </a>
+          </li>
+          <li>
+            <a href="../labs/network-threat-detection-telemetry/index.html" class="block rounded border terminal-border bg-zinc-900/50 p-4 transition-colors hover:border-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              <h2 class="font-mono text-sm text-cyan-400">network-telemetry/</h2>
+              <p class="mt-2 font-sans text-sm leading-relaxed text-zinc-400">Suricata dual-homed sensor, Wazuh SIEM integration. Nmap/Gobuster triage. Buffer tuning under event flood.</p>
+              <p class="mt-2 font-mono text-xs text-zinc-600">Suricata · Wazuh · Ubuntu · Kali · Apache · Nmap · Gobuster · VMware</p>
+            </a>
+          </li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- Credentials -->
+    <section id="creds" class="pb-16">
+      <p class="font-mono text-xs text-emerald-600">$ cat creds/*.txt</p>
+      <div class="mt-4 flex flex-wrap items-center gap-6 rounded border terminal-border bg-zinc-900/50 p-4">
+        <div class="flex items-center gap-3">
+          <img src="../assets/images/badges/MICH.jpg" alt="University of Michigan" class="h-12 w-12 object-contain opacity-90" width="48" height="48">
+          <div class="font-mono text-xs">
+            <p class="text-emerald-400">umich.edu</p>
+            <p class="text-zinc-500">B.S.E. CS, 2025 · cum laude</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <img src="../assets/images/badges/Security+.png" alt="CompTIA Security+" class="h-12 w-12 object-contain opacity-90" width="48" height="48">
+          <p class="font-mono text-xs text-zinc-400">CompTIA Security+</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <img src="../assets/images/badges/CloudPractitioner.png" alt="AWS Cloud Practitioner" class="h-12 w-12 object-contain opacity-90" width="48" height="48">
+          <p class="font-mono text-xs text-zinc-400">AWS Cloud Practitioner</p>
+        </div>
+      </div>
+
+      <!-- Collapsed coursework -->
+      <details class="mt-4 rounded border terminal-border bg-zinc-900/50">
+        <summary class="cursor-pointer px-4 py-3 font-mono text-sm text-zinc-400 hover:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">
+          $ cat coursework/*.md <span class="text-zinc-600">(6 files)</span>
+        </summary>
+        <div class="space-y-2 border-t terminal-border p-4">
+          <details class="rounded border terminal-border bg-zinc-950/50">
+            <summary class="cursor-pointer px-3 py-2 font-mono text-xs text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">eecs388.md</summary>
+            <ul class="border-t terminal-border px-3 py-2 font-sans text-xs leading-relaxed text-zinc-500 space-y-1">
+              <li>Web application security: SQL injection, XSS, CSRF, TLS/PKI</li>
+              <li>Network security &amp; defense: protocol attacks, firewalls, IDS, VPN, zero-trust</li>
+              <li>Applied cryptography: AES, RSA, authenticated encryption, cryptanalysis</li>
+              <li>Binary exploitation &amp; reverse engineering: buffer overflows, ROP, Ghidra</li>
+              <li>Hands-on projects in cryptography, web security, networking, and application security</li>
+            </ul>
+          </details>
+          <details class="rounded border terminal-border bg-zinc-950/50">
+            <summary class="cursor-pointer px-3 py-2 font-mono text-xs text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded"><a href="https://eecs376.org/" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300" onclick="event.stopPropagation()">eecs376.md</a></summary>
+            <ul class="border-t terminal-border px-3 py-2 font-sans text-xs leading-relaxed text-zinc-500 space-y-1">
+              <li>Cryptography: Diffie-Hellman key exchange, RSA encryption &amp; digital signatures</li>
+              <li>Computational hardness &amp; complexity (P vs NP) applied to cryptographic security</li>
+              <li>Algorithm design &amp; analysis: divide-and-conquer, dynamic programming, greedy methods</li>
+              <li>Randomized algorithms and probabilistic analysis</li>
+            </ul>
+          </details>
+          <details class="rounded border terminal-border bg-zinc-950/50">
+            <summary class="cursor-pointer px-3 py-2 font-mono text-xs text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">eecs445.md</summary>
+            <ul class="border-t terminal-border px-3 py-2 font-sans text-xs leading-relaxed text-zinc-500 space-y-1">
+              <li>Supervised learning: regression, classification, kernel methods, neural networks, and regularization</li>
+              <li>Unsupervised learning: clustering, density estimation, and dimensionality reduction</li>
+              <li>Theory and implementation of state-of-the-art ML algorithms for large-scale real-world applications</li>
+            </ul>
+          </details>
+          <details class="rounded border terminal-border bg-zinc-950/50">
+            <summary class="cursor-pointer px-3 py-2 font-mono text-xs text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">eecs470.md</summary>
+            <ul class="border-t terminal-border px-3 py-2 font-sans text-xs leading-relaxed text-zinc-500 space-y-1">
+              <li>Design and organization of processors, memory hierarchies, peripherals, and I/O</li>
+              <li>Performance techniques: instruction sets, speculation, parallel execution, branch prediction, virtual memory, cache design, and multiprocessing</li>
+              <li>Hardware/software trade-offs for efficient task execution</li>
+              <li>Hands-on processor component design using an HDL</li>
+            </ul>
+          </details>
+          <details class="rounded border terminal-border bg-zinc-950/50">
+            <summary class="cursor-pointer px-3 py-2 font-mono text-xs text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">eecs481.md</summary>
+            <ul class="border-t terminal-border px-3 py-2 font-sans text-xs leading-relaxed text-zinc-500 space-y-1">
+              <li>Pragmatic software production: structuring principles, design methodologies, and informal analysis</li>
+              <li>Development of large, complex software systems</li>
+              <li>Real-world engineering practices for building and delivering production software</li>
+              <li>Term project developing a full software system</li>
+            </ul>
+          </details>
+          <details class="rounded border terminal-border bg-zinc-950/50">
+            <summary class="cursor-pointer px-3 py-2 font-mono text-xs text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">eecs486.md</summary>
+            <ul class="border-t terminal-border px-3 py-2 font-sans text-xs leading-relaxed text-zinc-500 space-y-1">
+              <li>Information retrieval: indexing, processing, querying, classification, and retrieval models/algorithms</li>
+              <li>IR system implementation across text, image/video, audio, and geospatial data</li>
+              <li>Web search: crawling, link analysis, and search engine development</li>
+              <li>Social media and crowdsourcing in modern search systems</li>
+            </ul>
+          </details>
+        </div>
+      </details>
+    </section>
+  </main>
+</body>
+</html>

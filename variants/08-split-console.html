@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jack Jusko — Split Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+    .nav-link.active { color: rgb(28 25 23); font-weight: 600; text-decoration-color: rgb(28 25 23); }
+  </style>
+</head>
+<body class="min-h-screen bg-white font-sans text-stone-900 antialiased">
+  <a href="index.html" class="fixed bottom-4 right-4 z-50 rounded-full bg-stone-900 px-4 py-2 text-sm text-white shadow-lg hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400">Compare variants</a>
+
+  <nav class="fixed top-0 left-0 right-0 z-40 border-b border-stone-200 bg-white/95 backdrop-blur-sm">
+    <div class="flex items-center justify-between px-4 py-3 lg:pl-[calc(28%+1rem)]">
+      <span class="font-mono text-xs text-stone-500 lg:hidden">jack@homelab</span>
+      <span class="hidden font-mono text-xs text-stone-500 lg:inline">~/portfolio</span>
+      <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+        <a href="#about" class="nav-link underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-400 rounded">About</a>
+        <a href="#experience" class="nav-link underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-400 rounded">Experience</a>
+        <a href="#build" class="nav-link underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-400 rounded">Build</a>
+        <a href="#secure" class="nav-link underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-400 rounded">Secure</a>
+        <a href="#background" class="nav-link underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-400 rounded">Background</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="lg:flex pt-14">
+    <!-- Mobile header -->
+    <div class="border-b border-zinc-800 bg-zinc-950 px-4 py-5 font-mono text-sm text-zinc-300 lg:hidden">
+      <p><span class="text-emerald-400">jack@homelab</span>:<span class="text-cyan-400">~</span>$ whoami</p>
+      <p class="mt-1 text-white">jackjusko</p>
+      <div class="mt-3 flex gap-3 text-xs text-cyan-400">
+        <a href="https://github.com/jackjusko" target="_blank" rel="noopener noreferrer">github</a>
+        <a href="https://www.linkedin.com/in/johnjusko/" target="_blank" rel="noopener noreferrer">linkedin</a>
+        <a href="../assets/general-software-engineer-resume.pdf" target="_blank" rel="noopener noreferrer">resume.pdf</a>
+      </div>
+    </div>
+
+    <!-- Dark sidebar -->
+    <aside class="hidden lg:block lg:sticky lg:top-14 lg:h-[calc(100vh-3.5rem)] lg:w-[28%] lg:shrink-0 lg:overflow-y-auto border-r border-zinc-800 bg-zinc-950 px-6 py-6 font-mono text-sm">
+      <div class="rounded border border-zinc-800 p-1">
+        <img src="../assets/images/JackJusko.jpg" alt="Jack Jusko" class="aspect-square w-full object-cover grayscale-[15%]" width="200" height="200">
+      </div>
+      <p class="mt-4 text-emerald-400">jack@homelab<span class="text-zinc-500">:</span><span class="text-cyan-400">~</span>$ whoami</p>
+      <p class="text-zinc-200">jackjusko</p>
+      <p class="mt-3 text-emerald-400">jack@homelab<span class="text-zinc-500">:</span><span class="text-cyan-400">~</span>$ id</p>
+      <p class="text-xs leading-relaxed text-zinc-500">uid=1000(jack) gid=1000(jack) groups=1000(jack),27(sudo),999(docker)</p>
+      <p class="mt-4 text-xs text-zinc-500"># links</p>
+      <div class="mt-1 space-y-1 text-xs">
+        <a href="https://github.com/jackjusko" target="_blank" rel="noopener noreferrer" class="block text-cyan-400 hover:text-cyan-300">~/github.com/jackjusko</a>
+        <a href="https://www.linkedin.com/in/johnjusko/" target="_blank" rel="noopener noreferrer" class="block text-cyan-400 hover:text-cyan-300">~/linkedin.com/in/johnjusko</a>
+        <a href="../assets/general-software-engineer-resume.pdf" target="_blank" rel="noopener noreferrer" class="block text-cyan-400 hover:text-cyan-300">~/resume.pdf</a>
+      </div>
+      <p class="mt-6 text-emerald-400">jack@homelab<span class="text-zinc-500">:</span><span class="text-cyan-400">~</span>$ ls certs/</p>
+      <ul class="mt-2 space-y-3 text-xs text-zinc-400">
+        <li class="flex items-center gap-2">
+          <img src="../assets/images/badges/MICH.jpg" alt="" class="h-8 w-8 object-contain opacity-80" width="32" height="32">
+          <span>umich-bse-cs-2025</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <img src="../assets/images/badges/Security+.png" alt="" class="h-8 w-8 object-contain opacity-80" width="32" height="32">
+          <span>comptia-security-plus</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <img src="../assets/images/badges/CloudPractitioner.png" alt="" class="h-8 w-8 object-contain opacity-80" width="32" height="32">
+          <span>aws-cloud-practitioner</span>
+        </li>
+      </ul>
+      <p class="mt-6 text-xs text-zinc-600">Software, AI &amp; Cybersecurity Engineer</p>
+    </aside>
+
+    <main class="flex-1 min-w-0">
+      <section id="about" class="px-6 py-12 lg:py-16 min-h-[60vh] flex items-center">
+        <div class="mx-auto max-w-2xl w-full">
+          <span class="inline-block rounded-full bg-zinc-100 px-3 py-1 font-mono text-xs text-zinc-600">§ cat ~/.profile</span>
+          <p class="mt-4 text-sm font-bold uppercase tracking-widest text-stone-500">01 — About</p>
+          <p class="mt-4 leading-relaxed text-stone-700">I have been building full-scale software applications for 14 years. I specialize in systems architecture, cybersecurity, and web development, with a focus on resilient infrastructure and responding to security threats. Since starting at age 10, I have worked across diverse technologies to build and secure complex systems.</p>
+          <p class="mt-4 leading-relaxed text-stone-700">I skateboard, snowboard, and ski. A few years ago, I pulled a 1981 Yamaha XJ550 out of a garage where it had sat for 30 years. It was missing parts and wouldn't start. I rebuilt it from the frame up, fabricating parts when I couldn't find them. It was a hack-and-slash job, but it worked. I rode it 2,000 miles across the country. When I'm not outdoors or in the garage, I run a home lab on a mini PC to host my own media servers and network shares.</p>
+        </div>
+      </section>
+
+      <section id="experience" class="border-t border-stone-200 bg-stone-50 px-6 py-12 lg:py-16">
+        <div class="mx-auto max-w-2xl space-y-10">
+          <span class="inline-block rounded-full bg-zinc-100 px-3 py-1 font-mono text-xs text-zinc-600">§ journalctl --user -u career</span>
+          <p class="text-sm font-bold uppercase tracking-widest text-stone-500">02 — Experience</p>
+          <article class="space-y-3"><h2 class="text-xl font-bold">Web Development and Cybersecurity Consultant</h2><p class="text-sm text-stone-500">Foundation Management Services, Inc. · Jan 2026 – Present · Cleveland, Ohio</p><p class="leading-relaxed text-stone-700">I serve as web developer and cybersecurity consultant for Foundation Management Services and affiliated organizations, building new features and maintaining websites for FMS Cleveland, the Bruening Foundation, and related properties. I advise on security posture and incident response, and use Cursor rules/skills and OpenRouter CLI agents to accelerate feature delivery and verification.</p></article>
+          <article class="space-y-3 border-t border-stone-200 pt-8"><h2 class="text-xl font-bold">Acting CTO &amp; Lead Architect</h2><p class="text-sm text-stone-500">Bastion LLC · 2023 – 2024 · Remote</p><p class="leading-relaxed text-stone-700">Hired as Acting CTO &amp; Lead Architect at an existing fitness marketplace startup, I architected a P2P platform that secured pre-seed funding and reached the finals of the Ann Arbor Desai Accelerator. I managed the technical roadmap and a team of software interns, designed scalable AWS infrastructure (EC2/RDS), built custom Stripe Connect logic for split payments and tax compliance, and shipped a Node.js/Vue.js SPA with real-time WebSocket chat and coach-matching algorithms.</p><p class="text-sm text-stone-500">Technologies: Node.js, Vue.js, AWS, MySQL, Stripe Connect, WebSockets</p></article>
+          <article class="space-y-3 border-t border-stone-200 pt-8"><h2 class="text-xl font-bold">Project Head</h2><p class="text-sm text-stone-500">Enterprise Data Solutions · 2019 – 2020 · Cleveland, Ohio</p><p class="leading-relaxed text-stone-700">Promoted from Junior Developer to lead engineering of a cross-platform mobile marketplace for educational classes. I participated in the full Agile SDLC on a collaborative engineering team, architected C# / ASP.NET REST endpoints and SQL Server data access, and built base64 chunking upload logic for reliable large media transfers over unstable mobile networks.</p><p class="text-sm text-stone-500">Technologies: C#, ASP.NET, SQL Server</p></article>
+        </div>
+      </section>
+
+      <section id="build" class="border-t border-stone-200 px-6 py-12 lg:py-16">
+        <div class="mx-auto max-w-2xl space-y-10">
+          <span class="inline-block rounded-full bg-zinc-100 px-3 py-1 font-mono text-xs text-zinc-600">§ ls ~/projects/</span>
+          <p class="text-sm font-bold uppercase tracking-widest text-stone-500">03 — Build</p>
+          <a href="../projects/brewledger/index.html" class="group block focus:outline-none focus:ring-2 focus:ring-stone-400 rounded"><h2 class="text-2xl font-bold group-hover:underline">BrewLedger</h2><p class="mt-4 leading-relaxed text-stone-700">I built a local-first brewery operations platform with mobile and desktop clients, offline sync, an append-only inventory ledger, batch tracking, and TTB compliance — one API, deliberate conflict resolution, and an intentional split between floor and office workflows.</p><p class="mt-3 text-sm text-stone-500">Technologies: Vue 3, Capacitor, Dexie, Express, SQLite, Stripe</p></a>
+          <a href="../projects/bevwire/index.html" class="group block border-t border-stone-200 pt-10 focus:outline-none focus:ring-2 focus:ring-stone-400 rounded"><h2 class="text-2xl font-bold group-hover:underline">BevWire</h2><p class="mt-4 leading-relaxed text-stone-700">I built a markdown-native publishing platform for beverage industry news — file-based CMS, no editorial database, plus Newswire, an AI pipeline that scrapes press wires, filters for relevance, and publishes industry-press analysis within minutes.</p><p class="mt-3 text-sm text-stone-500">Technologies: Node.js, Express, Playwright, OpenAI, Tailwind, Capacitor</p></a>
+        </div>
+      </section>
+
+      <section id="secure" class="border-t border-stone-200 bg-stone-50 px-6 py-12 lg:py-16">
+        <div class="mx-auto max-w-2xl space-y-10">
+          <span class="inline-block rounded-full bg-zinc-100 px-3 py-1 font-mono text-xs text-zinc-600">§ wazuh-control status</span>
+          <p class="text-sm font-bold uppercase tracking-widest text-stone-500">04 — Secure</p>
+          <a href="../labs/brute-force-detection-response/index.html" class="group block focus:outline-none focus:ring-2 focus:ring-stone-400 rounded"><h2 class="text-2xl font-bold group-hover:underline">Simulated brute force detection and response</h2><p class="mt-4 leading-relaxed text-stone-700">I deployed a Wazuh agent on an Ubuntu droplet to monitor for security events. During a simulated SSH brute-force attack using Hydra, I detected authentication failure spikes, identified the attacker's source IP, and wrote custom Wazuh rules to trigger an active response firewall drop. After debugging an initial misconfiguration, I successfully secured the system.</p><p class="mt-3 text-sm text-stone-500">Technologies: Wazuh, Ubuntu 24.04, Kali Linux, Hydra, Nmap, DigitalOcean, VMware</p></a>
+          <a href="../labs/network-threat-detection-telemetry/index.html" class="group block border-t border-stone-200 pt-10 focus:outline-none focus:ring-2 focus:ring-stone-400 rounded"><h2 class="text-2xl font-bold group-hover:underline">Advanced network threat detection and telemetry analysis</h2><p class="mt-4 leading-relaxed text-stone-700">I deployed Suricata on a dual-homed VMware sensor to capture network traffic in promiscuous mode, piped eve.json alerts into my existing Wazuh SIEM, and triaged Nmap stealth scans and Gobuster directory enumeration against an Apache victim. When the Wazuh agent event queue saturated under Gobuster flood volume, I tuned buffer settings and disabled the client buffer to prevent event drops.</p><p class="mt-3 text-sm text-stone-500">Technologies: Suricata, Wazuh, Ubuntu 24.04, Kali Linux, Apache, Nmap, Gobuster, VMware</p></a>
+        </div>
+      </section>
+
+      <section id="background" class="border-t border-stone-200 px-6 py-12 pb-24 lg:py-16">
+        <div class="mx-auto max-w-2xl space-y-6">
+          <span class="inline-block rounded-full bg-zinc-100 px-3 py-1 font-mono text-xs text-zinc-600">§ apropos security</span>
+          <p class="text-sm font-bold uppercase tracking-widest text-stone-500">05 — Background</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead><tr class="border-b-2 border-stone-900"><th class="py-3 pr-4 font-bold">Course</th><th class="py-3 font-bold">Topics</th></tr></thead>
+              <tbody class="divide-y divide-stone-200">
+                <tr><td class="py-3 pr-4 font-medium align-top whitespace-nowrap">EECS 388</td><td class="py-3 text-stone-600">Web security (SQLi, XSS, CSRF, TLS/PKI) · Network defense (firewalls, IDS, VPN) · Cryptography (AES, RSA) · Binary exploitation &amp; Ghidra</td></tr>
+                <tr><td class="py-3 pr-4 font-medium align-top whitespace-nowrap"><a href="https://eecs376.org/" target="_blank" rel="noopener noreferrer" class="underline hover:text-stone-900">EECS 376</a></td><td class="py-3 text-stone-600">Diffie-Hellman, RSA, digital signatures · P vs NP &amp; cryptographic hardness · Algorithm design (DP, greedy, divide-and-conquer) · Randomized algorithms</td></tr>
+                <tr><td class="py-3 pr-4 font-medium align-top whitespace-nowrap">EECS 445</td><td class="py-3 text-stone-600">Supervised learning (regression, classification, neural nets) · Unsupervised learning (clustering, dimensionality reduction) · Large-scale ML implementation</td></tr>
+                <tr><td class="py-3 pr-4 font-medium align-top whitespace-nowrap">EECS 470</td><td class="py-3 text-stone-600">Processor &amp; memory hierarchy design · Speculation, branch prediction, cache design · HDL processor component design</td></tr>
+                <tr><td class="py-3 pr-4 font-medium align-top whitespace-nowrap">EECS 481</td><td class="py-3 text-stone-600">Large software systems · Design methodologies · Production engineering · Full-system term project</td></tr>
+                <tr><td class="py-3 pr-4 font-medium align-top whitespace-nowrap">EECS 486</td><td class="py-3 text-stone-600">Information retrieval &amp; indexing · Web search (crawling, link analysis) · Multimodal IR · Social/crowdsourced search</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var sections = document.querySelectorAll('section[id]');
+      var navLinks = document.querySelectorAll('.nav-link');
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var id = entry.target.id;
+            navLinks.forEach(function (link) {
+              link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+            });
+          }
+        });
+      }, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+      sections.forEach(function (s) { observer.observe(s); });
+    })();
+  </script>
+</body>
+</html>
