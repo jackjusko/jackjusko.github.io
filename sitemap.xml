@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://jackjusko.github.io/</loc>
+    <lastmod>2026-07-11</lastmod>
+  </url>
+  <url>
+    <loc>https://jackjusko.github.io/projects/brewledger/</loc>
+    <lastmod>2026-07-11</lastmod>
+  </url>
+  <url>
+    <loc>https://jackjusko.github.io/projects/bevwire/</loc>
+    <lastmod>2026-07-11</lastmod>
+  </url>
+  <url>
+    <loc>https://jackjusko.github.io/labs/brute-force-detection-response/</loc>
+    <lastmod>2026-07-11</lastmod>
+  </url>
+  <url>
+    <loc>https://jackjusko.github.io/labs/network-threat-detection-telemetry/</loc>
+    <lastmod>2026-07-11</lastmod>
+  </url>
+  <url>
+    <loc>https://jackjusko.github.io/blog/</loc>
+    <lastmod>2026-07-11</lastmod>
+  </url>
+  <url>
+    <loc>https://jackjusko.github.io/blog/hello-homelab-starting-journal/</loc>
+    <lastmod>2026-07-11</lastmod>
+  </url>
+</urlset>

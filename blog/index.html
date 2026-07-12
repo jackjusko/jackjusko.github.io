@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Jack Jusko</title>
+  <meta name="description" content="First-person writing by Jack Jusko on software, security, homelab work, and building things.">
+  <link rel="canonical" href="https://jackjusko.github.io/blog/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Blog — Jack Jusko">
+  <meta property="og:description" content="First-person writing by Jack Jusko on software, security, and building things.">
+  <meta property="og:url" content="https://jackjusko.github.io/blog/">
+  <meta property="og:image" content="https://jackjusko.github.io/assets/images/JackJusko.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Blog — Jack Jusko">
+  <meta name="twitter:description" content="First-person writing by Jack Jusko on software, security, and building things.">
+  <meta name="twitter:image" content="https://jackjusko.github.io/assets/images/JackJusko.jpg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .cmd-block { border-color: #1e3a2f; }
+  </style>
+</head>
+<body class="min-h-screen bg-zinc-950 text-zinc-300 antialiased">
+  <header class="border-b cmd-block bg-zinc-950/95 backdrop-blur-sm">
+    <div class="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <p class="font-mono text-sm text-emerald-400">
+        <span class="text-zinc-500">jack@homelab</span>:<span class="text-cyan-400">~</span>$ cd ~/blog/
+      </p>
+      <a href="../" class="font-mono text-xs text-zinc-500 hover:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">← portfolio</a>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
+    <div class="space-y-4 border-b border-zinc-800 pb-8">
+      <p class="font-mono text-xs font-medium uppercase tracking-wider text-zinc-500">~/blog/</p>
+      <h1 class="text-3xl font-semibold tracking-tight text-zinc-100">Blog</h1>
+      <p class="text-sm leading-relaxed text-zinc-400">Sequential notes — newest first. Tags are for browsing, not categories.</p>
+      <div class="rounded border cmd-block bg-zinc-900/60 px-4 py-3 font-mono text-xs">
+        <p class="text-emerald-400">jack@homelab<span class="text-zinc-600">:</span><span class="text-cyan-400">~/blog</span>$ ls -lt</p>
+      </div>
+    </div>
+
+    <div id="tag-filter" class="mt-8 flex flex-wrap gap-2 hidden"></div>
+
+    <div id="post-list" class="mt-10 space-y-6">
+      <p class="text-sm text-zinc-500">Loading posts…</p>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var listEl = document.getElementById('post-list');
+      var tagEl = document.getElementById('tag-filter');
+      var activeTag = new URLSearchParams(window.location.search).get('tag');
+
+      function tagClass(active) {
+        return active
+          ? 'rounded border border-emerald-800 bg-emerald-950/50 px-3 py-1 text-xs text-emerald-400'
+          : 'rounded border border-zinc-700 px-3 py-1 text-xs text-zinc-500 hover:border-emerald-800 hover:text-emerald-400';
+      }
+
+      function renderTags(posts) {
+        var tags = {};
+        posts.forEach(function (p) {
+          (p.tags || []).forEach(function (t) { tags[t] = true; });
+        });
+        var names = Object.keys(tags).sort();
+        if (!names.length) {
+          tagEl.classList.add('hidden');
+          return;
+        }
+        tagEl.classList.remove('hidden');
+        tagEl.innerHTML = '<a href="?" class="' + tagClass(!activeTag) + '">All</a>' +
+          names.map(function (tag) {
+            return '<a href="?tag=' + encodeURIComponent(tag) + '" class="' + tagClass(activeTag === tag) + '">' + tag + '</a>';
+          }).join('');
+      }
+
+      function renderPosts(posts) {
+        var filtered = activeTag
+          ? posts.filter(function (p) { return (p.tags || []).indexOf(activeTag) !== -1; })
+          : posts;
+        filtered.sort(function (a, b) { return (b.date || '').localeCompare(a.date || ''); });
+
+        if (!filtered.length) {
+          listEl.innerHTML = activeTag
+            ? '<p class="text-sm text-zinc-500">No posts tagged “' + activeTag + '”. <a href="?" class="text-cyan-400 hover:text-cyan-300">Show all</a></p>'
+            : '<p class="text-sm text-zinc-500">No posts yet. Check back soon or visit the <a href="../" class="text-cyan-400 hover:text-cyan-300">portfolio</a>.</p>';
+          return;
+        }
+
+        listEl.innerHTML = filtered.map(function (post) {
+          var tags = (post.tags || []).map(function (tag) {
+            return '<a href="?tag=' + encodeURIComponent(tag) + '" class="rounded border border-zinc-700 px-2 py-0.5 text-xs text-zinc-500 hover:border-emerald-800 hover:text-emerald-400">' + tag + '</a>';
+          }).join(' ');
+          return '<article class="rounded-lg border cmd-block bg-zinc-900/50 p-5">' +
+            '<time class="font-mono text-xs text-zinc-600" datetime="' + post.date + '">' + post.date + '</time>' +
+            '<h2 class="mt-2 text-lg font-semibold text-zinc-100"><a href="' + post.slug + '/" class="hover:text-emerald-400">' + post.title + '</a></h2>' +
+            '<p class="mt-1 font-mono text-xs text-cyan-400/80">~/blog/' + post.slug + '/</p>' +
+            '<p class="mt-2 text-sm leading-relaxed text-zinc-400">' + post.description + '</p>' +
+            (tags ? '<p class="mt-3 flex flex-wrap gap-2">' + tags + '</p>' : '') +
+            '<p class="mt-4"><a href="' + post.slug + '/" class="text-sm font-medium text-cyan-400 hover:text-cyan-300">Read post →</a></p>' +
+            '</article>';
+        }).join('');
+      }
+
+      fetch('posts.json')
+        .then(function (res) { return res.json(); })
+        .then(function (posts) {
+          renderTags(posts);
+          renderPosts(posts);
+        })
+        .catch(function () {
+          listEl.innerHTML = '<p class="text-sm text-zinc-500">Could not load posts.</p>';
+        });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{TITLE}} | Jack Jusko</title>
+  <meta name="description" content="{{DESCRIPTION}}">
+  <link rel="canonical" href="https://jackjusko.github.io/blog/{{SLUG}}/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{TITLE}} | Jack Jusko">
+  <meta property="og:description" content="{{DESCRIPTION}}">
+  <meta property="og:url" content="https://jackjusko.github.io/blog/{{SLUG}}/">
+  <meta property="og:image" content="https://jackjusko.github.io/assets/images/JackJusko.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{TITLE}} | Jack Jusko">
+  <meta name="twitter:description" content="{{DESCRIPTION}}">
+  <meta name="twitter:image" content="https://jackjusko.github.io/assets/images/JackJusko.jpg">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "{{TITLE}}",
+    "description": "{{DESCRIPTION}}",
+    "datePublished": "{{DATE_ISO}}",
+    "author": {
+      "@type": "Person",
+      "name": "Jack Jusko",
+      "url": "https://jackjusko.github.io/"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Jack Jusko"
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "https://jackjusko.github.io/blog/{{SLUG}}/"
+    },
+    "keywords": "{{KEYWORDS}}"
+  }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .cmd-block { border-color: #1e3a2f; }
+    .prose-blog h2 { margin-top: 2rem; margin-bottom: 0.75rem; font-size: 1.125rem; font-weight: 600; color: rgb(244 244 245); }
+    .prose-blog h3 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1rem; font-weight: 600; color: rgb(228 228 231); }
+    .prose-blog ul { margin: 1rem 0; list-style: disc; padding-left: 1.25rem; }
+    .prose-blog li { margin: 0.375rem 0; }
+    .prose-blog a { color: rgb(34 211 238); }
+    .prose-blog a:hover { color: rgb(103 232 249); }
+  </style>
+</head>
+<body class="min-h-screen bg-zinc-950 text-zinc-300 antialiased">
+  <header class="border-b cmd-block bg-zinc-950/95 backdrop-blur-sm">
+    <div class="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <a href="../../" class="font-mono text-sm text-emerald-400 hover:text-emerald-300">
+        <span class="text-zinc-500">jack@homelab</span>:<span class="text-cyan-400">~</span>$ Jack Jusko
+      </a>
+      <a href="../../" class="font-mono text-xs text-zinc-500 hover:text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">← portfolio</a>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
+    <article class="space-y-8">
+      <header class="space-y-4 border-b border-zinc-800 pb-8">
+        <p class="font-mono text-xs text-zinc-600">
+          <a href="../" class="text-cyan-400 hover:text-cyan-300">~/blog/</a><span class="text-zinc-600"> / </span>{{SLUG}}/
+        </p>
+        <time class="font-mono text-xs text-zinc-500" datetime="{{DATE_ISO}}">{{DATE_DISPLAY}}</time>
+        <h1 class="text-3xl font-semibold tracking-tight text-zinc-100">{{TITLE}}</h1>
+        <a href="../../" class="flex items-center gap-3 rounded-lg border cmd-block bg-zinc-900/60 p-3 hover:border-emerald-800 transition-colors">
+          <img src="../../assets/images/JackJusko.jpg" alt="Jack Jusko" class="h-12 w-12 rounded-lg border border-zinc-700 object-cover" width="48" height="48">
+          <span class="text-sm text-zinc-400">
+            <span class="font-medium text-zinc-100">Jack Jusko</span><br>
+            Software, AI &amp; Cybersecurity Engineer
+          </span>
+        </a>
+        <div class="flex flex-wrap gap-2">
+          {{TAG_CHIPS}}
+        </div>
+      </header>
+
+      <div class="prose-blog space-y-4 text-sm leading-relaxed text-zinc-400">
+        {{BODY_HTML}}
+      </div>
+
+      <aside class="rounded-lg border cmd-block bg-zinc-900/60 p-6">
+        <p class="text-sm leading-relaxed text-zinc-400">
+          I write about what I build and what I break in the lab. If this was useful, my portfolio has the longer-form project writeups, security labs, and work history.
+        </p>
+        <a href="../../" class="mt-4 inline-block rounded border border-emerald-800 bg-emerald-950/40 px-4 py-2 text-sm font-medium text-emerald-400 hover:border-emerald-700 hover:bg-emerald-950/60 transition-colors">See my portfolio →</a>
+      </aside>
+
+      <div class="prose-blog space-y-4 text-sm leading-relaxed text-zinc-400">
+        {{BODY_CONTINUATION_HTML}}
+      </div>
+
+      <footer class="border-t border-zinc-800 pt-8">
+        <p class="text-sm text-zinc-500">
+          Thanks for reading. I am Jack Jusko — I build software, work in security, and document both on this site.
+        </p>
+        <a href="../../" class="mt-4 inline-block text-sm font-medium text-cyan-400 hover:text-cyan-300">Back to jackjusko.github.io →</a>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

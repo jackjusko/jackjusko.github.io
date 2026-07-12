@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /variants/
+Disallow: /backup_file_ignore_this.html
+Disallow: /assets/brewledger-resources/
+
+Sitemap: https://jackjusko.github.io/sitemap.xml

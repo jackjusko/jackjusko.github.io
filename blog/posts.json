@@ -1,0 +1,14 @@
+[
+  {
+    "slug": "hello-homelab-starting-journal",
+    "title": "Hello Homelab: Starting the Journal",
+    "date": "2026-07-11",
+    "description": "I'm starting a blog to document my homelab projects, AI experiments, and cybersecurity labs. Useful notes for software engineers and security folks.",
+    "tags": [
+      "homelab",
+      "meta",
+      "security",
+      "software-engineering"
+    ]
+  }
+]
