@@ -85,8 +85,9 @@
         </div>
       </div>
       <div class="mt-3 flex flex-wrap gap-3 font-sans text-sm">
-        <a href="https://github.com/jackjusko" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300">GitHub — jackjusko</a>
-        <a href="https://www.linkedin.com/in/johnjusko/" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300">LinkedIn — johnjusko</a>
+        <a href="https://github.com/jackjusko" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300"><img src="assets/images/github-logo.svg" alt="GitHub" class="h-4 w-4 shrink-0" width="16" height="16" loading="lazy">GitHub — jackjusko</a>
+        <a href="https://www.linkedin.com/in/johnjusko/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300"><img src="assets/images/linkedin-logo.svg" alt="LinkedIn" class="h-4 w-4 shrink-0" width="16" height="16" loading="lazy">LinkedIn — johnjusko</a>
+        <a href="https://huggingface.co/jackjusko" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300"><img src="assets/images/hf-logo.svg" alt="Hugging Face" class="h-4 w-4 shrink-0" width="16" height="16" loading="lazy">Hugging Face — jackjusko</a>
         <a href="assets/general-software-engineer-resume.pdf" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300">Resume</a>
         <a href="blog/" class="text-cyan-400 hover:text-cyan-300">Blog</a>
       </div>
@@ -104,8 +105,9 @@
       </div>
       <p class="mt-5 font-mono text-xs text-zinc-600"># links</p>
       <div class="mt-2 flex flex-col gap-2 text-sm">
-        <a href="https://github.com/jackjusko" target="_blank" rel="noopener noreferrer" class="text-zinc-300 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">GitHub — jackjusko</a>
-        <a href="https://www.linkedin.com/in/johnjusko/" target="_blank" rel="noopener noreferrer" class="text-zinc-300 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">LinkedIn — johnjusko</a>
+        <a href="https://github.com/jackjusko" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-zinc-300 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded"><img src="assets/images/github-logo.svg" alt="GitHub" class="h-4 w-4 shrink-0" width="16" height="16" loading="lazy">GitHub — jackjusko</a>
+        <a href="https://www.linkedin.com/in/johnjusko/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-zinc-300 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded"><img src="assets/images/linkedin-logo.svg" alt="LinkedIn" class="h-4 w-4 shrink-0" width="16" height="16" loading="lazy">LinkedIn — johnjusko</a>
+        <a href="https://huggingface.co/jackjusko" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-zinc-300 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded"><img src="assets/images/hf-logo.svg" alt="Hugging Face" class="h-4 w-4 shrink-0" width="16" height="16" loading="lazy">Hugging Face — jackjusko</a>
         <a href="assets/general-software-engineer-resume.pdf" target="_blank" rel="noopener noreferrer" class="text-zinc-300 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">Resume <span class="font-mono text-xs text-zinc-600">~/resume.pdf</span></a>
         <a href="blog/" class="text-zinc-300 hover:text-cyan-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded">Blog <span class="font-mono text-xs text-zinc-600">~/blog/</span></a>
       </div>
@@ -387,7 +389,8 @@ Aug 19  eds-project-head.service   Started</pre>
       var config = {
         resume: 'assets/general-software-engineer-resume.pdf',
         github: 'https://github.com/jackjusko',
-        linkedin: 'https://www.linkedin.com/in/johnjusko/'
+        linkedin: 'https://www.linkedin.com/in/johnjusko/',
+        huggingface: 'https://huggingface.co/jackjusko'
       };
       var sectionMap = {
         about: 'about',
@@ -490,7 +493,8 @@ Aug 19  eds-project-head.service   Started</pre>
           if (link === 'resume' || cmd === 'resume') { openUrl(config.resume); printLine('Opening resume…'); return; }
           if (link === 'github') { openUrl(config.github); printLine('Opening GitHub…'); return; }
           if (link === 'linkedin') { openUrl(config.linkedin); printLine('Opening LinkedIn…'); return; }
-          printLine('Try: open resume, open github, open linkedin');
+          if (link === 'huggingface' || link === 'hf') { openUrl(config.huggingface); printLine('Opening Hugging Face…'); return; }
+          printLine('Try: open resume, open github, open linkedin, open huggingface');
           return;
         }
         if (cmd === 'resume') { openUrl(config.resume); printLine('Opening resume…'); return; }
